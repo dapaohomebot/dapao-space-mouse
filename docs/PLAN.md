@@ -2,7 +2,7 @@
 
 ## Concept
 
-A joystick-style mouse with a cylindrical "space mouse" body:
+A wireless joystick-style mouse with a cylindrical "space mouse" body:
 
 ```
         ┌─────────────┐
@@ -10,22 +10,34 @@ A joystick-style mouse with a cylindrical "space mouse" body:
         │             │
         ├─────────────┤
        / ╲           ╱ \
-      │   ╲_________╱   │  ← Concave cylindrical body
+      │   ╲_________╱   │  ← Concave cylindrical body (bare plastic)
       │                  │     Tilts X/Y for cursor movement
-       \ ╱─────────╲  /
+       \ ╱─────────╲  /     Push down + tilt Y = scroll
         ├───────────┤
    [◄]  │           │  [►]  ← Side buttons: Back / Forward
         │  (BASE)   │
+        │ ⊕ steel ⊕ │  ← Weighted base (steel inserts)
         └───────────┘
               ↓
         Push down = click
 ```
 
+## Design Decisions
+
+| Decision | Choice |
+|---|---|
+| Connectivity | **Wireless** (BLE via ESP32-S3) + USB-C for charging |
+| Joystick | **Off-the-shelf** analog joystick module (Alps RKJXV or similar) |
+| Scroll | **Tilt-while-pushed** (hold push-down + tilt Y = scroll) |
+| Base weight | **Steel inserts** in base cavity for stability |
+| Grip | **Bare plastic** (no rubber/silicone overlay) |
+
 **Input mapping:**
 | Input | Action |
 |---|---|
 | Tilt X/Y | Mouse cursor movement |
-| Push down (Z-axis) | Primary click (configurable) |
+| Push down (Z-axis) | Middle click / modifier for scroll |
+| Push down + Tilt Y | Scroll up/down |
 | Top-left button | Left click |
 | Top-right button | Right click |
 | Left side button | Browser back |
@@ -39,30 +51,34 @@ A joystick-style mouse with a cylindrical "space mouse" body:
 - [ ] Define overall size (target: ~60mm body diameter, ~80mm tall, ~100mm base diameter)
 - [ ] Sketch cross-section showing joystick pivot mechanism
 - [ ] Define tilt range (±15–20° feels natural for joystick mice)
-- [ ] Choose assembly method: snap-fit clips + 2–4 screws
+- [ ] Choose assembly method: snap-fit clips + 2–4 M2 screws
 
 ### 1.2 — Joystick Mechanism
-- [ ] Design gimbal/ball-joint pivot at base of cylinder
-- [ ] Spring-return centering mechanism (compression spring or elastomer)
-- [ ] Z-axis travel for push-down click (~1–2mm)
-- [ ] Options:
-  - **Option A**: Hall-effect joystick module (analog X/Y + push) — simplest
-  - **Option B**: Custom gimbal with hall sensors or potentiometers — more control
-  - **Recommended**: Start with Option A (off-the-shelf analog joystick module like Alps RKJXV or similar)
+- [ ] Mount off-the-shelf analog joystick module (Alps RKJXV or similar) to PCB/base
+- [ ] Design coupler: rigid connection from joystick stick to body shell
+- [ ] Spring-return centering is built into the module
+- [ ] Z-axis push-down click is built into the module (push switch)
+- [ ] Verify travel range matches body tilt geometry
 
 ### 1.3 — Body Shell
 - [ ] Cylindrical body with concave profile (hourglass shape)
+- [ ] Bare plastic surface — optimize wall thickness for comfortable grip (2–3mm)
 - [ ] Top plate with cutouts for 2 tactile switches (L/R buttons)
-- [ ] Button caps/rockers for comfortable clicking
+- [ ] Button caps for comfortable clicking
 - [ ] Internal ribbing for strength
-- [ ] Cable channel or USB-C port cutout at base
+- [ ] Joystick coupler socket at bottom of body
 
 ### 1.4 — Base
-- [ ] Weighted base for stability (steel weight insert or thick walls)
-- [ ] Anti-slip rubber pads on bottom
-- [ ] Side button cutouts (2x, left and right)
-- [ ] PCB mounting posts
+- [ ] Weighted base with **steel insert cavities** (2–4 pockets for steel slugs/washers)
+  - Target added weight: 50–80g of steel
+  - Pockets sized for standard steel washers (M8–M10) or cut steel rod
+- [ ] Anti-slip rubber pads on bottom (4x adhesive feet)
+- [ ] Side button cutouts (2x, left and right of base ring)
+- [ ] PCB mounting posts (4x M2 standoffs)
+- [ ] Battery compartment (below PCB or beside it)
+- [ ] USB-C port cutout at back of base (for charging)
 - [ ] Bottom plate with screw access
+- [ ] Power switch cutout (slide switch)
 
 ### 1.5 — CAD Deliverables
 - [ ] OpenSCAD parametric model (all dimensions as variables)
@@ -71,114 +87,153 @@ A joystick-style mouse with a cylindrical "space mouse" body:
 - [ ] Print test fit parts on FDM (0.2mm layer, PLA/PETG)
 
 **Parts list (printed):**
-1. Base bottom plate
-2. Base ring (with side button cutouts)
-3. Body shell (concave cylinder)
-4. Top cap (with button cutouts)
+1. Base bottom plate (with steel insert pockets)
+2. Base ring (with side button cutouts + USB-C port)
+3. Body shell (concave cylinder, bare plastic)
+4. Top cap (with L/R button cutouts)
 5. Button caps × 4 (2 top + 2 side)
-6. Joystick coupler (connects joystick module to body)
+6. Joystick coupler (connects joystick module shaft to body shell)
+7. Battery holder/bracket
 
 ---
 
 ## Phase 2: Electronics (PCB)
 
 ### 2.1 — Component Selection
-- [ ] **MCU**: RP2040 (native USB HID, cheap, well-supported)
-  - QFN-56 package, 2x ARM Cortex-M0+, 264KB SRAM
-  - Native USB 1.1 with HID support
-- [ ] **Joystick sensing** (pick one):
-  - Option A: Off-the-shelf analog joystick module (2x potentiometer + push switch)
-  - Option B: 2x Hall-effect sensors (SS49E or DRV5053) + magnets on gimbal
-- [ ] **Buttons**: 4x Kailh micro switches or Omron tactile switches
+- [ ] **MCU**: ESP32-S3 (native USB + BLE 5.0)
+  - ESP32-S3-WROOM-1 module (integrated antenna, flash, PSRAM)
+  - Or ESP32-S3-MINI-1 for smaller footprint
+  - BLE HID for wireless mouse
+  - USB HID fallback when plugged in (wired mode)
+- [ ] **Joystick**: Off-the-shelf analog module
+  - 2x potentiometer (X/Y) → ESP32-S3 ADC
+  - 1x push switch (Z-axis) → GPIO
+  - 5-pin header: VCC, GND, X, Y, SW
+- [ ] **Buttons**: 4x Kailh micro switches or Omron B3U tactile
   - 2x top (left/right click)
   - 2x side (forward/back)
-- [ ] **Push-down detection**: Built into joystick module (Option A) or separate tactile switch under spring
-- [ ] **USB-C connector**: USB 2.0 type-C receptacle (e.g., GCT USB4085)
-- [ ] **Voltage**: 3.3V via LDO from USB 5V (AP2112K-3.3 or similar)
-- [ ] **Decoupling**: Standard RP2040 caps (100nF × several, 1µF bulk)
-- [ ] **Crystal**: 12MHz for RP2040
-- [ ] **Flash**: W25Q16 (2MB SPI flash for RP2040 firmware)
-- [ ] **Optional**: WS2812B RGB LED(s) for status/flair
+- [ ] **Battery**: LiPo single cell 3.7V
+  - 500–800mAh (fits in base, weeks of battery life at BLE power)
+  - JST-PH 2-pin connector
+- [ ] **Charging IC**: TP4056 or MCP73831
+  - USB-C input → LiPo charging
+  - Charge status LED (red=charging, green=full)
+- [ ] **Voltage regulation**: 3.3V LDO (AP2112K-3.3 or ME6211)
+  - Input from LiPo (3.0–4.2V) or USB 5V
+- [ ] **Power switch**: Slide switch (SPDT) between battery and LDO
+- [ ] **USB-C connector**: USB 2.0 type-C (charging + wired data fallback)
+- [ ] **ESD protection**: USBLC6-2SC6 on USB lines
+- [ ] **Decoupling**: Per ESP32-S3 design guide
+- [ ] **Optional**: WS2812B RGB LED for status/pairing indication
 
 ### 2.2 — Schematic
-- [ ] RP2040 minimal circuit (follow hardware design guide)
-- [ ] USB-C with proper CC resistors (5.1kΩ to GND)
-- [ ] ADC inputs for joystick X/Y (GP26–GP29)
-- [ ] GPIO for 5 switches (4 buttons + push-down)
+- [ ] ESP32-S3 module circuit (WROOM-1 reference design)
+- [ ] USB-C with CC resistors (5.1kΩ) + data lines to ESP32-S3 USB
+- [ ] LiPo charging circuit (TP4056/MCP73831 + protection)
+- [ ] Power path: USB 5V → charger → LiPo → LDO → 3.3V
+- [ ] ADC inputs for joystick X/Y (GPIO1–GPIO10 range)
+- [ ] GPIO for 5 switches (4 buttons + push-down) with pull-ups
 - [ ] BOOT and RESET buttons (for firmware flashing)
+- [ ] Power switch in battery path
+- [ ] Battery voltage divider for fuel gauge (ADC pin)
+- [ ] Charge status LED
 - [ ] Power LED
-- [ ] ESD protection on USB lines (optional but good practice)
 
 ### 2.3 — PCB Layout
-- [ ] Target board size: fits inside base (~80mm diameter circular or shaped)
-- [ ] 2-layer PCB (keep cost low for JLCPCB)
-- [ ] USB-C at edge for cable exit
-- [ ] Joystick connector header or direct solder pads
-- [ ] Mounting holes matching base posts
-- [ ] KiCad project with proper DRC
+- [ ] Target board size: fits inside base (~70×70mm or circular)
+- [ ] 2-layer PCB (JLCPCB compatible)
+- [ ] Keep antenna area clear (no ground/traces under ESP32-S3 antenna)
+- [ ] USB-C at edge for charging port
+- [ ] Joystick module header centered
+- [ ] Battery connector at edge
+- [ ] Mounting holes matching base posts (4x M2)
+- [ ] KiCad project with proper DRC + antenna keepout
 
 ### 2.4 — PCB Deliverables
 - [ ] KiCad schematic (.kicad_sch)
 - [ ] KiCad PCB layout (.kicad_pcb)
 - [ ] Gerber files for fab
 - [ ] BOM with LCSC/JLCPCB part numbers
-- [ ] Pick-and-place file (if doing SMT assembly)
+- [ ] Pick-and-place file (for SMT assembly)
 
 ---
 
 ## Phase 3: Firmware
 
 ### 3.1 — Platform & Framework
-- [ ] PlatformIO with Arduino framework (or TinyUSB directly)
-- [ ] Target: RP2040
-- [ ] USB HID composite device: Mouse + extra buttons
+- [ ] PlatformIO with Arduino framework
+- [ ] Target: ESP32-S3
+- [ ] BLE HID mouse (primary mode)
+- [ ] USB HID mouse (fallback when plugged in)
+- [ ] Libraries: ESP32-BLE-Mouse or NimBLE + custom HID
 
 ### 3.2 — Core Features
 - [ ] **Joystick → Mouse movement**
   - Read ADC X/Y values
-  - Deadzone calibration (center position)
-  - Sensitivity curve (linear or acceleration)
-  - Convert tilt angle to mouse delta
+  - Auto-calibration on startup (sample center position)
+  - Configurable deadzone (~5–10% of range)
+  - Sensitivity curve (linear with optional acceleration)
+  - Convert tilt magnitude to mouse delta (larger tilt = faster cursor)
+- [ ] **Scroll emulation (tilt-while-pushed)**
+  - Detect push-down held
+  - While pushed: tilt Y → scroll delta (instead of cursor Y)
+  - Tilt X still moves cursor X (or disabled during scroll — TBD)
+  - Scroll speed scaling (slower than cursor for precision)
 - [ ] **Button handling**
   - Software debouncing (5–10ms)
   - Top-left → Left click (HID button 1)
   - Top-right → Right click (HID button 2)
-  - Push-down → Middle click or configurable (HID button 3)
+  - Push-down tap → Middle click (HID button 3)
+  - Push-down hold → scroll mode modifier
   - Side-left → Back (HID button 4)
   - Side-right → Forward (HID button 5)
-- [ ] **USB HID reporting**
-  - Standard HID mouse descriptor
-  - 1000Hz polling rate (1ms USB interval)
-  - Report: buttons (5 bits) + X delta + Y delta
+- [ ] **BLE HID reporting**
+  - BLE HID mouse profile
+  - ~125Hz report rate (8ms BLE interval — good balance of latency vs power)
+  - Report: buttons (5 bits) + X delta + Y delta + scroll delta
+- [ ] **Power management**
+  - Deep sleep after N minutes of inactivity
+  - Wake on any button press or joystick movement
+  - Battery voltage monitoring via ADC
+  - Low battery warning (blink LED)
 
 ### 3.3 — Advanced Features (post-MVP)
-- [ ] DPI/sensitivity switching (button combo or dedicated button)
-- [ ] Adjustable deadzone via serial config
-- [ ] Auto-calibration on startup (read center position)
-- [ ] RGB LED control (if fitted)
-- [ ] Scroll emulation (e.g., hold push-down + tilt Y = scroll)
+- [ ] DPI/sensitivity switching (button combo: e.g., hold both side buttons)
+- [ ] BLE pairing management (pair button combo)
+- [ ] USB HID mode when cable detected (auto-switch)
+- [ ] Adjustable deadzone/sensitivity via USB serial config tool
+- [ ] Battery percentage reporting via BLE battery service
+- [ ] RGB LED effects for status (pairing, low battery, charging)
+- [ ] OTA firmware update via ESP32-S3 web server
 
 ### 3.4 — Firmware Deliverables
 - [ ] PlatformIO project with clean structure
-- [ ] `src/main.cpp` — entry point
+- [ ] `src/main.cpp` — entry point, mode switching
 - [ ] `src/joystick.h/cpp` — ADC reading, deadzone, scaling
 - [ ] `src/buttons.h/cpp` — debouncing, state machine
-- [ ] `src/usb_hid.h/cpp` — HID descriptor, report sending
-- [ ] `platformio.ini` — RP2040 board config
-- [ ] README with flashing instructions
+- [ ] `src/hid_ble.h/cpp` — BLE HID mouse profile
+- [ ] `src/hid_usb.h/cpp` — USB HID fallback
+- [ ] `src/scroll.h/cpp` — scroll-while-pushed logic
+- [ ] `src/power.h/cpp` — sleep, wake, battery monitoring
+- [ ] `platformio.ini` — ESP32-S3 board config
+- [ ] README with flashing + pairing instructions
 
 ---
 
 ## Phase 4: Integration & Testing
 
 - [ ] Print all case parts, test fit
-- [ ] Solder PCB (or order assembled from JLCPCB)
-- [ ] Flash firmware, verify USB enumeration
-- [ ] Test each input (all 5 buttons + X/Y + push)
+- [ ] Verify steel insert pockets fit standard washers
+- [ ] Solder/order assembled PCB
+- [ ] Flash firmware, verify BLE pairing
+- [ ] Test each input (all 5 buttons + X/Y + push + scroll)
 - [ ] Calibrate joystick center and sensitivity
-- [ ] Assemble full unit
+- [ ] Test charging circuit (charge time, status LEDs)
+- [ ] Measure battery life (target: 1+ week typical use)
+- [ ] Test USB fallback mode
+- [ ] Assemble full unit with steel weights
 - [ ] Use it for a day — note ergonomic issues
-- [ ] Iterate on case shape and button placement
+- [ ] Iterate on case shape, button placement, and firmware tuning
 
 ---
 
@@ -186,37 +241,46 @@ A joystick-style mouse with a cylindrical "space mouse" body:
 
 | Component | Qty | Est. Cost |
 |---|---|---|
-| RP2040 (QFN) | 1 | $0.70 |
-| W25Q16 SPI Flash | 1 | $0.30 |
-| 12MHz Crystal | 1 | $0.15 |
+| ESP32-S3-WROOM-1 Module | 1 | $2.50 |
 | USB-C Connector | 1 | $0.30 |
+| TP4056 / MCP73831 (Charging IC) | 1 | $0.30 |
 | AP2112K-3.3 LDO | 1 | $0.20 |
+| LiPo Battery 3.7V 500–800mAh | 1 | $3.00–5.00 |
 | Analog Joystick Module | 1 | $1.50–3.00 |
 | Tactile Switches (Kailh/Omron) | 4 | $2.00 |
-| Passive components (caps, resistors) | ~15 | $0.50 |
-| PCB fab (5 pcs) | — | $5.00 |
-| 3D printing filament | — | $2.00 |
-| USB-C cable | 1 | $2.00 |
-| **Total (est.)** | | **~$15–17** |
+| Slide Switch (power) | 1 | $0.10 |
+| USBLC6-2SC6 (ESD) | 1 | $0.25 |
+| Passive components (caps, resistors, LEDs) | ~20 | $1.00 |
+| PCB fab (5 pcs, 2-layer) | — | $5.00 |
+| 3D printing filament (~50g) | — | $2.00 |
+| Steel washers/inserts (base weight) | 4–6 | $1.00 |
+| Rubber feet (adhesive) | 4 | $0.50 |
+| M2 Screws + standoffs | 6 | $0.50 |
+| **Total (est.)** | | **~$20–24** |
 
 ---
 
 ## Development Order
 
 ```
-Week 1-2:  Phase 1.1–1.2  →  Nail down the joystick mechanism
+Week 1-2:  Phase 1.1–1.2  →  Joystick mechanism + coupler design
 Week 2-3:  Phase 1.3–1.5  →  Full CAD model, print prototypes
-Week 3-4:  Phase 2.1–2.4  →  Schematic + PCB layout
-Week 4-5:  Phase 3.1–3.4  →  Firmware (can start in parallel with PCB fab)
-Week 5-6:  Phase 4         →  Assemble, test, iterate
+Week 3-4:  Phase 2.1–2.4  →  Schematic + PCB layout (order PCB + parts)
+Week 4-5:  Phase 3.1–3.2  →  Core firmware (BLE HID + joystick + buttons)
+Week 5-6:  Phase 3.3–3.4  →  Scroll, power management, polish
+Week 6-7:  Phase 4         →  Assemble, test, iterate
 ```
+
+*Firmware dev can start on an ESP32-S3 dev board + breadboard joystick in Week 3 while waiting for PCBs.*
 
 ---
 
-## Open Questions
+## Design Decisions Log
 
-1. **Wired or wireless?** — Plan assumes wired USB-C. Wireless adds battery, charging circuit, and BLE/2.4GHz radio (ESP32-S3 would be better MCU for wireless).
-2. **Joystick module vs custom gimbal?** — Off-the-shelf module is faster to prototype; custom gimbal gives better feel but needs more mechanical design.
-3. **Scroll wheel?** — Not in current spec. Could add scroll via tilt-while-pushed or a thumb wheel on the side.
-4. **Weighted base?** — Steel slugs or pennies in the base? How heavy should it feel?
-5. **Grip surface?** — Bare plastic, or add rubber/silicone grip to the concave sides?
+| # | Decision | Rationale |
+|---|---|---|
+| 1 | Wireless (BLE) via ESP32-S3 | Clean desk, no cable drag. USB-C for charging + wired fallback. |
+| 2 | Off-the-shelf joystick module | Faster prototyping, proven mechanism, built-in centering spring + push switch. |
+| 3 | Scroll = tilt-while-pushed | No extra hardware needed. Push-down becomes dual-purpose (tap=click, hold+tilt=scroll). |
+| 4 | Steel inserts in base | Stability without making the whole base massive. Adjustable weight. |
+| 5 | Bare plastic grip | Simpler manufacturing. Concave shape provides natural grip. Can add texture in slicer. |
