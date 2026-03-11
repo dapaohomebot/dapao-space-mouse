@@ -97,7 +97,7 @@ tilt_angle_max   = 18;
 // aligned with the L/R mouse button split (at ±90° from front)
 side_btn_width    = 14;   // width along circumference (mm)
 side_btn_height   = 10;   // height on body surface (mm)
-side_btn_z_frac   = 0.55; // vertical position as fraction of body_height (0=bottom, 1=top)
+side_btn_z_frac   = 0.78; // vertical position as fraction of body_height (0=bottom, 1=top)
 side_btn_depth    = 2;    // how deep the button pocket is
 side_btn_travel   = 1.5;  // inward click travel
 
