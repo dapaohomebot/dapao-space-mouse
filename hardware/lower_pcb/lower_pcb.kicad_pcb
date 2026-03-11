@@ -1,0 +1,189 @@
+(kicad_pcb
+  (version 20221018)
+  (generator "hand_coded")
+  (general
+    (thickness 1.6)
+    (legacy_teardrops no)
+  )
+  (paper "A4")
+  (title_block
+    (title "DaPao Space Mouse — Lower PCB")
+    (date "2026-03-11")
+    (rev "1.0")
+    (comment 1 "Circular ∅88mm, 2-layer, 1.6mm thick")
+  )
+
+  (layers
+    (0 "F.Cu" signal)
+    (31 "B.Cu" signal)
+    (32 "B.Adhes" user "B.Adhesive")
+    (33 "F.Adhes" user "F.Adhesive")
+    (34 "B.Paste" user)
+    (35 "F.Paste" user)
+    (36 "B.SilkS" user "B.Silkscreen")
+    (37 "F.SilkS" user "F.Silkscreen")
+    (38 "B.Mask" user "B.Mask")
+    (39 "F.Mask" user "F.Mask")
+    (44 "Edge.Cuts" user)
+    (45 "Margin" user)
+  )
+
+  (setup
+    (pad_to_mask_clearance 0.05)
+    (aux_axis_origin 0 0)
+    (grid_origin 0 0)
+    (pcbplotparams
+      (layerselection 0x00010fc_ffffffff)
+      (plot_on_all_layers_selection 0x0000000_00000000)
+    )
+  )
+
+  (net 0 "")
+  (net 1 "GND")
+  (net 2 "3V3")
+  (net 3 "VBUS")
+  (net 4 "BAT+")
+  (net 5 "USB_DP")
+  (net 6 "USB_DN")
+  (net 7 "JOY_X")
+  (net 8 "JOY_Y")
+  (net 9 "JOY_SW")
+  (net 10 "VBAT_SENSE")
+  (net 11 "BTN_LEFT")
+  (net 12 "BTN_RIGHT")
+  (net 13 "BTN_BACK")
+  (net 14 "BTN_FWD")
+
+  ;; ============================================================
+  ;; BOARD OUTLINE — Circular ∅88mm with center cutout ∅27mm
+  ;; ============================================================
+
+  ;; Outer circle (∅88mm, center at 100,100)
+  (gr_circle (center 100 100) (end 144 100)
+    (stroke (width 0.1) (type solid))
+    (layer "Edge.Cuts")
+    (uuid "10000001-0001-0001-0001-000000000001")
+  )
+
+  ;; Center cutout for joystick module (∅27mm)
+  (gr_circle (center 100 100) (end 113.5 100)
+    (stroke (width 0.1) (type solid))
+    (layer "Edge.Cuts")
+    (uuid "10000001-0001-0001-0001-000000000002")
+  )
+
+  ;; ============================================================
+  ;; MOUNTING HOLES — 4× M2 at 30mm radius
+  ;; ============================================================
+
+  (footprint "MountingHole:MountingHole_2.2mm_M2_Pad"
+    (layer "F.Cu")
+    (uuid "20000001-0001-0001-0001-000000000001")
+    (at 130 100)  ;; 30mm right of center
+    (property "Reference" "H1" (at 0 -3 0) (layer "F.SilkS") (uuid "20000001-0001-0001-0001-100000000001") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "MountingHole_M2" (at 0 3 0) (layer "F.Fab") (uuid "20000001-0001-0001-0001-100000000002") (effects (font (size 1 1) (thickness 0.15))))
+    (pad "1" thru_hole circle (at 0 0) (size 4.4 4.4) (drill 2.2) (layers "*.Cu" "*.Mask") (net 0 ""))
+  )
+
+  (footprint "MountingHole:MountingHole_2.2mm_M2_Pad"
+    (layer "F.Cu")
+    (uuid "20000001-0001-0001-0001-000000000002")
+    (at 70 100)  ;; 30mm left of center
+    (property "Reference" "H2" (at 0 -3 0) (layer "F.SilkS") (uuid "20000001-0001-0001-0001-200000000001") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "MountingHole_M2" (at 0 3 0) (layer "F.Fab") (uuid "20000001-0001-0001-0001-200000000002") (effects (font (size 1 1) (thickness 0.15))))
+    (pad "1" thru_hole circle (at 0 0) (size 4.4 4.4) (drill 2.2) (layers "*.Cu" "*.Mask") (net 0 ""))
+  )
+
+  (footprint "MountingHole:MountingHole_2.2mm_M2_Pad"
+    (layer "F.Cu")
+    (uuid "20000001-0001-0001-0001-000000000003")
+    (at 100 70)  ;; 30mm above center
+    (property "Reference" "H3" (at 0 -3 0) (layer "F.SilkS") (uuid "20000001-0001-0001-0001-300000000001") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "MountingHole_M2" (at 0 3 0) (layer "F.Fab") (uuid "20000001-0001-0001-0001-300000000002") (effects (font (size 1 1) (thickness 0.15))))
+    (pad "1" thru_hole circle (at 0 0) (size 4.4 4.4) (drill 2.2) (layers "*.Cu" "*.Mask") (net 0 ""))
+  )
+
+  (footprint "MountingHole:MountingHole_2.2mm_M2_Pad"
+    (layer "F.Cu")
+    (uuid "20000001-0001-0001-0001-000000000004")
+    (at 100 130)  ;; 30mm below center
+    (property "Reference" "H4" (at 0 -3 0) (layer "F.SilkS") (uuid "20000001-0001-0001-0001-400000000001") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "MountingHole_M2" (at 0 3 0) (layer "F.Fab") (uuid "20000001-0001-0001-0001-400000000002") (effects (font (size 1 1) (thickness 0.15))))
+    (pad "1" thru_hole circle (at 0 0) (size 4.4 4.4) (drill 2.2) (layers "*.Cu" "*.Mask") (net 0 ""))
+  )
+
+  ;; ============================================================
+  ;; PLACEMENT GUIDE (silkscreen text)
+  ;; ============================================================
+
+  (gr_text "USB-C (J1)\n→ align with\nbase port"
+    (at 144 100 0)
+    (layer "F.SilkS")
+    (uuid "30000001-0001-0001-0001-000000000001")
+    (effects (font (size 1.2 1.2) (thickness 0.15)) (justify left))
+  )
+
+  (gr_text "ESP32-S3\n(U1)"
+    (at 118 88 0)
+    (layer "F.SilkS")
+    (uuid "30000001-0001-0001-0001-000000000002")
+    (effects (font (size 1.5 1.5) (thickness 0.2)))
+  )
+
+  (gr_text "Joystick\nCenter\nCutout"
+    (at 100 100 0)
+    (layer "F.SilkS")
+    (uuid "30000001-0001-0001-0001-000000000003")
+    (effects (font (size 1.2 1.2) (thickness 0.15)))
+  )
+
+  (gr_text "FPC J3\n(to upper)"
+    (at 100 88 0)
+    (layer "F.SilkS")
+    (uuid "30000001-0001-0001-0001-000000000004")
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+
+  (gr_text "TP4056\n(U2)"
+    (at 135 92 0)
+    (layer "F.SilkS")
+    (uuid "30000001-0001-0001-0001-000000000005")
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+
+  (gr_text "LDO\n(U3)"
+    (at 112 105 0)
+    (layer "F.SilkS")
+    (uuid "30000001-0001-0001-0001-000000000006")
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+
+  (gr_text "Battery\nJST (J2)"
+    (at 82 108 0)
+    (layer "F.SilkS")
+    (uuid "30000001-0001-0001-0001-000000000007")
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+
+  (gr_text "SW1\nPower"
+    (at 56 100 0)
+    (layer "F.SilkS")
+    (uuid "30000001-0001-0001-0001-000000000008")
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+
+  (gr_text "ANTENNA\nKEEPOUT\nZONE"
+    (at 118 78 0)
+    (layer "F.SilkS")
+    (uuid "30000001-0001-0001-0001-000000000009")
+    (effects (font (size 1.5 1.5) (thickness 0.2)))
+  )
+
+  ;; ============================================================
+  ;; GROUND POUR (both layers)
+  ;; ============================================================
+  ;; Add copper zones for GND on both F.Cu and B.Cu in KiCad
+  ;; editor — fill the entire board area, assign to net "GND",
+  ;; with thermal relief pads.
+
+)

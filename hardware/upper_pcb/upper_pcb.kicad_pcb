@@ -1,0 +1,139 @@
+(kicad_pcb
+  (version 20221018)
+  (generator "hand_coded")
+  (general
+    (thickness 1.0)
+    (legacy_teardrops no)
+  )
+  (paper "A4")
+  (title_block
+    (title "DaPao Space Mouse — Upper PCB")
+    (date "2026-03-11")
+    (rev "1.0")
+    (comment 1 "Circular ∅54mm, 2-layer, 1.0mm thick")
+    (comment 2 "Button board: L/R click + FWD/BACK + FPC connector")
+  )
+
+  (layers
+    (0 "F.Cu" signal)
+    (31 "B.Cu" signal)
+    (32 "B.Adhes" user "B.Adhesive")
+    (33 "F.Adhes" user "F.Adhesive")
+    (34 "B.Paste" user)
+    (35 "F.Paste" user)
+    (36 "B.SilkS" user "B.Silkscreen")
+    (37 "F.SilkS" user "F.Silkscreen")
+    (38 "B.Mask" user "B.Mask")
+    (39 "F.Mask" user "F.Mask")
+    (44 "Edge.Cuts" user)
+    (45 "Margin" user)
+  )
+
+  (setup
+    (pad_to_mask_clearance 0.05)
+    (aux_axis_origin 0 0)
+    (grid_origin 0 0)
+    (pcbplotparams
+      (layerselection 0x00010fc_ffffffff)
+      (plot_on_all_layers_selection 0x0000000_00000000)
+    )
+  )
+
+  (net 0 "")
+  (net 1 "GND")
+  (net 2 "3V3")
+  (net 3 "BTN_LEFT")
+  (net 4 "BTN_RIGHT")
+  (net 5 "BTN_BACK")
+  (net 6 "BTN_FWD")
+
+  ;; ============================================================
+  ;; BOARD OUTLINE — Circular ∅54mm
+  ;; ============================================================
+
+  (gr_circle (center 100 100) (end 127 100)
+    (stroke (width 0.1) (type solid))
+    (layer "Edge.Cuts")
+    (uuid "40000001-0001-0001-0001-000000000001")
+  )
+
+  ;; ============================================================
+  ;; MOUNTING HOLES — 2× M2
+  ;; ============================================================
+
+  (footprint "MountingHole:MountingHole_2.2mm_M2_Pad"
+    (layer "F.Cu")
+    (uuid "50000001-0001-0001-0001-000000000001")
+    (at 85 100)
+    (property "Reference" "H1" (at 0 -3 0) (layer "F.SilkS") (uuid "50000001-0001-0001-0001-100000000001") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "MountingHole_M2" (at 0 3 0) (layer "F.Fab") (uuid "50000001-0001-0001-0001-100000000002") (effects (font (size 1 1) (thickness 0.15))))
+    (pad "1" thru_hole circle (at 0 0) (size 4.4 4.4) (drill 2.2) (layers "*.Cu" "*.Mask") (net 0 ""))
+  )
+
+  (footprint "MountingHole:MountingHole_2.2mm_M2_Pad"
+    (layer "F.Cu")
+    (uuid "50000001-0001-0001-0001-000000000002")
+    (at 115 100)
+    (property "Reference" "H2" (at 0 -3 0) (layer "F.SilkS") (uuid "50000001-0001-0001-0001-200000000001") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "MountingHole_M2" (at 0 3 0) (layer "F.Fab") (uuid "50000001-0001-0001-0001-200000000002") (effects (font (size 1 1) (thickness 0.15))))
+    (pad "1" thru_hole circle (at 0 0) (size 4.4 4.4) (drill 2.2) (layers "*.Cu" "*.Mask") (net 0 ""))
+  )
+
+  ;; ============================================================
+  ;; PLACEMENT GUIDE (silkscreen)
+  ;; ============================================================
+
+  (gr_text "SW4\nL-Click\n↑ plunger UP"
+    (at 90 88 0)
+    (layer "F.SilkS")
+    (uuid "60000001-0001-0001-0001-000000000001")
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+
+  (gr_text "SW5\nR-Click\n↑ plunger UP"
+    (at 110 88 0)
+    (layer "F.SilkS")
+    (uuid "60000001-0001-0001-0001-000000000002")
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+
+  (gr_text "SW6 BACK\n← plunger OUT"
+    (at 76 100 0)
+    (layer "F.SilkS")
+    (uuid "60000001-0001-0001-0001-000000000003")
+    (effects (font (size 0.8 0.8) (thickness 0.12)))
+  )
+
+  (gr_text "SW7 FWD\nplunger OUT →"
+    (at 124 100 0)
+    (layer "F.SilkS")
+    (uuid "60000001-0001-0001-0001-000000000004")
+    (effects (font (size 0.8 0.8) (thickness 0.12)))
+  )
+
+  (gr_text "FPC J5\n(to lower PCB)"
+    (at 100 115 0)
+    (layer "F.SilkS")
+    (uuid "60000001-0001-0001-0001-000000000005")
+    (effects (font (size 1 1) (thickness 0.15)))
+  )
+
+  (gr_text "FRONT\n(click side)"
+    (at 100 77 0)
+    (layer "F.SilkS")
+    (uuid "60000001-0001-0001-0001-000000000006")
+    (effects (font (size 1.2 1.2) (thickness 0.15)))
+  )
+
+  ;; ============================================================
+  ;; NOTES
+  ;; ============================================================
+  ;; - SW4/SW5 (L/R click) face UP — half-circle buttons press down on them
+  ;; - SW6/SW7 (Back/Forward) are at board edges facing OUTWARD
+  ;;   through the body shell side cutouts
+  ;; - FPC connector at bottom of board, cable routes down through
+  ;;   body interior
+  ;; - Board mounts to underside of top_frame via M2 standoffs
+  ;; - GND pour on both layers
+
+)

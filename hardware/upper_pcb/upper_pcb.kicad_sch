@@ -1,0 +1,48 @@
+(kicad_sch
+  (version 20230121)
+  (generator "hand_coded")
+  (uuid "b1b2c3d4-e5f6-7890-abcd-ef1234567890")
+  (paper "A4")
+
+  (title_block
+    (title "DaPao Space Mouse — Upper PCB")
+    (date "2026-03-11")
+    (rev "1.0")
+    (comment 1 "Button board: L/R click + Forward/Back")
+    (comment 2 "Circular PCB ∅54mm, 2-layer, 1.0mm thick")
+  )
+
+  ;; ============================================================
+  ;; Simple board: 4 switches + FPC connector + decoupling cap
+  ;; All active-low (pull-ups on lower PCB)
+  ;; ============================================================
+
+  ;; --- POWER NETS (from FPC) ---
+  (global_label "3V3" (shape input) (at 30 40 0) (uuid "00000002-0001-0001-0001-000000000001")
+    (effects (font (size 1.27 1.27)))
+  )
+  (global_label "GND" (shape passive) (at 30 50 0) (uuid "00000002-0001-0001-0001-000000000002")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  ;; --- BUTTON NETS ---
+  (global_label "BTN_LEFT" (shape output) (at 80 40 0) (uuid "00000002-0001-0001-0001-000000000010")
+    (effects (font (size 1.27 1.27)))
+  )
+  (global_label "BTN_RIGHT" (shape output) (at 80 50 0) (uuid "00000002-0001-0001-0001-000000000011")
+    (effects (font (size 1.27 1.27)))
+  )
+  (global_label "BTN_BACK" (shape output) (at 80 60 0) (uuid "00000002-0001-0001-0001-000000000012")
+    (effects (font (size 1.27 1.27)))
+  )
+  (global_label "BTN_FWD" (shape output) (at 80 70 0) (uuid "00000002-0001-0001-0001-000000000013")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  ;; --- ANNOTATIONS ---
+  (text "=== UPPER PCB COMPONENT PLACEMENT ===\n\nJ5: FPC 6-pin 0.5mm connector\n     Center-bottom of board\n     Pin1→3V3, Pin2→GND\n     Pin3→BTN_LEFT, Pin4→BTN_RIGHT\n     Pin5→BTN_BACK, Pin6→BTN_FWD\n\nSW4: Kailh micro switch (Left click)\n     Top-left quadrant, plunger faces UP\n     One pin → BTN_LEFT\n     Other pin → GND\n\nSW5: Kailh micro switch (Right click)\n     Top-right quadrant, plunger faces UP\n     One pin → BTN_RIGHT\n     Other pin → GND\n\nSW6: Side-mount tactile switch (Back)\n     Left edge of board, plunger faces LEFT (outward)\n     One pin → BTN_BACK\n     Other pin → GND\n\nSW7: Side-mount tactile switch (Forward)\n     Right edge of board, plunger faces RIGHT (outward)\n     One pin → BTN_FWD\n     Other pin → GND\n\nC1: 100nF decoupling cap (0402)\n     Near J5, between 3V3 and GND\n\nMounting: 2× M2 holes\n     Aligned with top frame screw posts"
+    (at 30 90 0)
+    (uuid "00000002-0001-0001-0001-000000000099")
+    (effects (font (size 1.27 1.27)) (justify left))
+  )
+)
