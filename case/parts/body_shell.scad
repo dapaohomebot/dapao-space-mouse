@@ -45,8 +45,8 @@ module body_shell() {
                     body_concave_solid(body_wall);
             }
 
-            // Solid floor disc at base to close off the bottom and connect ring
-            cylinder(r = inner_r_bottom, h = 1.2);
+            // Solid floor disc at base — slightly smaller than inner wall to avoid zero-thickness face
+            cylinder(r = inner_r_bottom - 0.1, h = 1.2);
 
             // Coupler seat ring: OD = inner wall, ID = coupler_flange + tol
             // This is a 3mm-tall ring flush with the body inner wall

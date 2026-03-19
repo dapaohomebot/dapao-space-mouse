@@ -66,7 +66,7 @@ tilt_angle_max   = 18;
 // --- Side Buttons (on body) -----------------------------------
 side_btn_width    = 14;
 side_btn_height   = 10;
-side_btn_z_frac   = 0.78;
+side_btn_z_frac   = 0.82;  // center at 45mm — cutout spans 40-50mm, clear of 53mm top socket
 side_btn_depth    = 2;
 side_btn_travel   = 1.5;
 
@@ -86,7 +86,14 @@ top_btn_plunger_h = 3;
 
 top_sw_post_d     = 5;
 top_sw_post_h     = 8;
-top_sw_offset_y   = 10;
+top_sw_offset_y   = 12;   // Y distance from center to L/R switch (matches PCB SW4/SW5)
+top_sw_x          = 10;   // X distance from center to L/R switch (matches PCB SW4/SW5)
+top_mount_x       = 15;   // X distance from center to PCB M2 mount holes (matches PCB H1/H2)
+top_mount_y       = 0;    // Y distance from center to PCB M2 mount holes
+
+// Top frame side switch cutouts (for SW6 Back / SW7 Fwd on upper PCB)
+top_side_sw_w     = 9;    // cutout width through frame wall
+top_side_sw_h     = 5;    // cutout height through frame wall
 
 // --- Joystick Module ------------------------------------------
 joy_base_w  = 25;
