@@ -1,53 +1,45 @@
 // ============================================================
-// DaPao Space Mouse — Part 6: Right Top Button (Half-Circle Rocker)
-// Hinges at back (Y-), clicks at front (Y+)
-// The living hinge tab (~1mm thick) is intentional — allows flex
-// Print: dome-side down, no supports needed
+// DaPao Space Mouse — Part 6: Right Top Button (v2)
+// Half-circle rocker. Hinges at back (Y-), clicks at front (Y+).
+// Fix: hinge tab extends from button body — always connected.
+// Fix: plunger nub is a solid post through the button shell.
+// Print: dome-side down, no supports.
 // Qty: 1
 // ============================================================
 include <params.scad>
 
-module top_button(side) {
-    frame_id = body_od_top - 2 * top_frame_wall;
-    btn_r = frame_id / 2 - top_btn_clearance;
+module top_button_right() {
+    frame_id  = body_od_top - 2 * top_frame_wall;
+    inner_r   = frame_id / 2;
+    btn_r     = inner_r - top_btn_clearance;
+    shell_h   = top_btn_height + top_btn_dome;
 
-    difference() {
-        union() {
-            // Half-circle button body
-            intersection() {
-                difference() {
-                    // Domed top surface
-                    translate([0, 0, 0])
-                        scale([1, 1, (top_btn_height + top_btn_dome) / btn_r])
-                            sphere(r=btn_r);
-                    // Hollow underneath
-                    translate([0, 0, -btn_r])
-                        scale([1, 1, (top_btn_height + top_btn_dome) / btn_r])
-                            sphere(r=btn_r - 1.5);
-                    // Cut off bottom hemisphere
-                    translate([0, 0, -btn_r])
-                        cube([2*btn_r, 2*btn_r, 2*btn_r], center=true);
-                }
+    // Right half: X >= divider/2 + clearance/2
+    clip_x_min = top_frame_divider / 2 + top_btn_clearance / 2;
 
-                // Trim to right half (X >= 0)
-                translate([top_frame_divider/2 + top_btn_clearance/2, -(btn_r + 1), -1])
-                    cube([btn_r + 1 - top_frame_divider/2 - top_btn_clearance/2,
-                          2*(btn_r + 1),
-                          top_btn_height + top_btn_dome + 2]);
+    union() {
+        // --- Main button half-disc ---
+        intersection() {
+            scale([1, 1, shell_h / btn_r])
+                sphere(r = btn_r);
 
-                // Trim to within frame circle
-                cylinder(r=btn_r, h=top_btn_height + top_btn_dome + 2);
-            }
+            // Crop to right half only
+            translate([clip_x_min, -btn_r, -shell_h])
+                cube([btn_r * 2, btn_r * 2, shell_h * 2]);
 
-            // Hinge tab at back (Y-)
-            translate([side * frame_id/4, -(btn_r - top_btn_hinge_w/2), 0])
-                cube([top_btn_hinge_w, top_btn_hinge_w, top_btn_hinge_t], center=false);
+            cylinder(r = btn_r, h = shell_h + 0.1);
         }
-    }
 
-    // Switch plunger contact (underneath, at front)
-    translate([side * frame_id/4, top_sw_offset_y, -top_btn_plunger_h])
-        cylinder(d=top_btn_plunger_d, h=top_btn_plunger_h);
+        // --- Hinge tab at back (Y-) ---
+        translate([clip_x_min / 2 + top_btn_hinge_w / 4,
+                   -(btn_r - top_btn_hinge_t / 2),
+                   0])
+            cube([top_btn_hinge_w, top_btn_hinge_t, shell_h / 2], center = true);
+
+        // --- Plunger post at front (Y+) ---
+        translate([inner_r / 4, top_sw_offset_y, 0])
+            cylinder(d = top_btn_plunger_d, h = top_btn_plunger_h);
+    }
 }
 
-top_button(1);   // Right button
+top_button_right();

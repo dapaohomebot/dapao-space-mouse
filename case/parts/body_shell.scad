@@ -1,14 +1,14 @@
 // ============================================================
-// DaPao Space Mouse — Part 3: Concave Body Shell
-// Contains: hourglass body with side button cutouts,
-//           internal coupler mounting ring, top frame socket
-// Print: upright, supports for side button cutout overhangs
+// DaPao Space Mouse — Part 3: Concave Body Shell (v2)
+// Fix: mounting ring OD matches inner wall radius so it's solid.
+// Fix: coupler pocket matches coupler_flange OD for a secure seat.
+// Print: upright, supports for side button cutout overhangs.
 // Qty: 1
 // ============================================================
 include <params.scad>
 
 module body_concave_solid(inset) {
-    n = body_resolution;
+    n    = body_resolution;
     step = body_height / n;
     for (i = [0:n-1]) {
         t1 = i / n;
@@ -24,44 +24,47 @@ module body_concave_solid(inset) {
     }
 }
 
-// Punches a rounded-rect hole through the concave wall at the current Z height
 module side_button_cutout() {
     r_at_height = shell_r(side_btn_z_frac);
-    cut_depth = body_wall + 4;
-    translate([r_at_height - cut_depth/2, 0, 0])
+    cut_depth   = body_wall + 4;
+    translate([r_at_height - cut_depth / 2, 0, 0])
         rounded_rect(cut_depth, side_btn_width, side_btn_height, 2);
 }
 
 module body_shell() {
     side_btn_z = body_height * side_btn_z_frac;
+    // Inner radius at bottom — mounting ring must reach this to stay connected
+    inner_r_bottom = shell_r(0) - body_wall;  // = 27.5 mm
 
     difference() {
         union() {
-            // Outer concave surface minus inner cavity
+            // Concave wall shell
             difference() {
                 body_concave_solid(0);
                 translate([0, 0, -0.1])
                     body_concave_solid(body_wall);
             }
 
-            // Internal mounting ring at bottom for joystick coupler
+            // Solid floor disc at base to close off the bottom and connect ring
+            cylinder(r = inner_r_bottom, h = 1.2);
+
+            // Coupler seat ring: OD = inner wall, ID = coupler_flange + tol
+            // This is a 3mm-tall ring flush with the body inner wall
             difference() {
-                cylinder(d=coupler_flange + 4, h=3);
+                cylinder(r = inner_r_bottom, h = 3);
                 translate([0, 0, -0.1])
-                    cylinder(d=coupler_od + tol, h=3.2);
+                    cylinder(d = coupler_flange + tol, h = 3.2);
             }
         }
 
-        // Hollow out top for top frame insertion
+        // Top socket for top_frame lip
         translate([0, 0, body_height - top_frame_lip - 0.1])
-            cylinder(d=body_od_top - 2*body_wall + tol, h=top_frame_lip + 0.2);
+            cylinder(d = body_od_top - 2 * body_wall + tol, h = top_frame_lip + 0.2);
 
-        // Side button cutout — Left (X-)
+        // Side button cutouts
         translate([0, 0, side_btn_z])
             rotate([0, 0, 90])
                 side_button_cutout();
-
-        // Side button cutout — Right (X+)
         translate([0, 0, side_btn_z])
             rotate([0, 0, -90])
                 side_button_cutout();
