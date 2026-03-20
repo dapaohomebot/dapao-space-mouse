@@ -19,11 +19,12 @@ Full component list for both PCBs. All prices approximate USD at time of writing
 | SW1 | SPDT slide switch MSK-12C02 (power) | SMD | 1 | $0.10 | LCSC: C431541 |
 | SW2 | Tactile switch 3x4mm (BOOT) | SMD | 1 | $0.05 | LCSC: C318884 |
 | SW3 | Tactile switch 3x4mm (RESET) | SMD | 1 | $0.05 | LCSC: C318884 |
-| R1–R5 | 10kΩ resistor (pull-ups) | 0402 | 5 | $0.01 ea | generic 0402 |
-| R6, R7 | 100kΩ resistor (VBAT divider) | 0402 | 2 | $0.01 ea | generic 0402 |
-| R8 | 2kΩ resistor (TP4056 PROG, 500mA) | 0402 | 1 | $0.01 | generic 0402 |
-| R9, R10 | 1kΩ resistor (LED current limit) | 0402 | 2 | $0.01 ea | generic 0402 |
-| R11, R12 | 5.1kΩ resistor (USB-C CC lines) | 0402 | 2 | $0.01 ea | generic 0402 |
+| R_PU5 | 10kΩ resistor (JOY_SW pull-up only) | 0402 | 1 | $0.01 | generic 0402 |
+| R5, R6 | 100kΩ resistor (VBAT divider) | 0402 | 2 | $0.01 ea | generic 0402 |
+| R7 | 2kΩ resistor (TP4056 PROG, 500mA) | 0402 | 1 | $0.01 | generic 0402 |
+| R8, R9 | 1kΩ resistor (LED current limit) | 0402 | 2 | $0.01 ea | generic 0402 |
+| R10, R11 | 5.1kΩ resistor (USB-C CC lines) | 0402 | 2 | $0.01 ea | generic 0402 |
+| ~~R_PU1–R_PU4~~ | ~~BTN pull-ups moved to upper PCB~~ | — | — | — | see upper PCB R1–R4 |
 | C1–C4 | 100nF ceramic cap (decoupling) | 0402 | 4 | $0.01 ea | generic 0402 |
 | C5–C7 | 10µF ceramic cap (bulk) | 0805 | 3 | $0.05 ea | generic 0805 |
 | LED1 | Red LED (charge indicator) | 0402 | 1 | $0.02 | generic 0402 |
@@ -41,10 +42,11 @@ Full component list for both PCBs. All prices approximate USD at time of writing
 |-----|-------------|---------|-----|-------------|-----------------|
 | SW4 | Kailh micro switch 6x6mm upright (L-click) | Through-hole | 1 | $0.30 | LCSC: C455292 |
 | SW5 | Kailh micro switch 6x6mm upright (R-click) | Through-hole | 1 | $0.30 | LCSC: C455292 |
-| SW6 | Kailh micro switch 6x6mm side-mount (Back) | Through-hole | 1 | $0.35 | LCSC: C455292 (rotated) |
-| SW7 | Kailh micro switch 6x6mm side-mount (Fwd) | Through-hole | 1 | $0.35 | LCSC: C455292 (rotated) |
+| SW6 | Kailh micro switch 6x6mm side-mount (Back) | Through-hole | 1 | $0.35 | LCSC: C455292 (rotated 90°) |
+| SW7 | Kailh micro switch 6x6mm side-mount (Fwd) | Through-hole | 1 | $0.35 | LCSC: C455292 (rotated 90°) |
+| R1–R4 | 10kΩ pull-up resistors (BTN_LEFT/RIGHT/BACK/FWD) | 0402 | 4 | $0.01 ea | generic 0402 |
 | J5 | FPC connector 6-pin 0.5mm top-contact | SMD | 1 | $0.20 | LCSC: C11021 |
-| C1 | 100nF ceramic cap (decoupling) | 0402 | 1 | $0.01 | generic 0402 |
+| C1 | 100nF ceramic cap (3V3 decoupling) | 0402 | 1 | $0.01 | generic 0402 |
 | H1, H2 | M2 brass standoff 3mm | Through-hole | 2 | $0.05 ea | generic |
 | — | Upper PCB fabrication (JLCPCB 5x) | dia54mm 2-layer 1.0mm | 1 set | ~$5–8 | JLCPCB / PCBWay |
 

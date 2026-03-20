@@ -5,21 +5,13 @@
   (paper "A3")
 
   (title_block
-    (title "DaPao Space Mouse — Lower PCB")
-    (date "2026-03-11")
-    (rev "1.0")
-    (comment 1 "Base board: ESP32-S3 + Power + Joystick + FPC")
-    (comment 2 "Circular PCB ∅88mm, 2-layer")
+    (title "DaPao Space Mouse - Lower PCB")
+    (date "2026-03-20")
+    (rev "1.1")
+    (comment 1 "Base board: XIAO ESP32-S3 + Power + Joystick + FPC")
+    (comment 2 "Circular PCB dia88mm, 2-layer, 1.6mm thick")
+    (comment 3 "Rev 1.1: BTN pull-ups moved to upper PCB (R1-R4). R_PU5 (JOY_SW) stays here.")
   )
-
-  ;; ============================================================
-  ;; This schematic defines the netlist and component references
-  ;; for the lower (base) PCB. Open in KiCad 7+ schematic editor,
-  ;; then assign footprints and place symbols interactively.
-  ;;
-  ;; Components are placed as text annotations for reference.
-  ;; Use "Place Symbol" in KiCad to add each from the library.
-  ;; ============================================================
 
   ;; --- POWER NETS ---
   (global_label "VBUS" (shape input) (at 30 40 0) (uuid "00000001-0001-0001-0001-000000000001")
@@ -36,39 +28,19 @@
   )
 
   ;; --- SIGNAL NETS ---
-  (global_label "USB_DP" (shape bidirectional) (at 80 40 0) (uuid "00000001-0001-0001-0001-000000000010")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "USB_DN" (shape bidirectional) (at 80 45 0) (uuid "00000001-0001-0001-0001-000000000011")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "JOY_X" (shape input) (at 80 55 0) (uuid "00000001-0001-0001-0001-000000000012")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "JOY_Y" (shape input) (at 80 60 0) (uuid "00000001-0001-0001-0001-000000000013")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "JOY_SW" (shape input) (at 80 65 0) (uuid "00000001-0001-0001-0001-000000000014")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "VBAT_SENSE" (shape input) (at 80 70 0) (uuid "00000001-0001-0001-0001-000000000015")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "BTN_LEFT" (shape input) (at 80 80 0) (uuid "00000001-0001-0001-0001-000000000016")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "BTN_RIGHT" (shape input) (at 80 85 0) (uuid "00000001-0001-0001-0001-000000000017")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "BTN_BACK" (shape input) (at 80 90 0) (uuid "00000001-0001-0001-0001-000000000018")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "BTN_FWD" (shape input) (at 80 95 0) (uuid "00000001-0001-0001-0001-000000000019")
-    (effects (font (size 1.27 1.27)))
-  )
+  (global_label "USB_DP"     (shape bidirectional) (at 80 40 0) (uuid "00000001-0001-0001-0001-000000000010") (effects (font (size 1.27 1.27))))
+  (global_label "USB_DN"     (shape bidirectional) (at 80 45 0) (uuid "00000001-0001-0001-0001-000000000011") (effects (font (size 1.27 1.27))))
+  (global_label "JOY_X"      (shape input) (at 80 55 0) (uuid "00000001-0001-0001-0001-000000000012") (effects (font (size 1.27 1.27))))
+  (global_label "JOY_Y"      (shape input) (at 80 60 0) (uuid "00000001-0001-0001-0001-000000000013") (effects (font (size 1.27 1.27))))
+  (global_label "JOY_SW"     (shape input) (at 80 65 0) (uuid "00000001-0001-0001-0001-000000000014") (effects (font (size 1.27 1.27))))
+  (global_label "VBAT_SENSE" (shape input) (at 80 70 0) (uuid "00000001-0001-0001-0001-000000000015") (effects (font (size 1.27 1.27))))
+  (global_label "BTN_LEFT"   (shape input) (at 80 80 0) (uuid "00000001-0001-0001-0001-000000000016") (effects (font (size 1.27 1.27))))
+  (global_label "BTN_RIGHT"  (shape input) (at 80 85 0) (uuid "00000001-0001-0001-0001-000000000017") (effects (font (size 1.27 1.27))))
+  (global_label "BTN_BACK"   (shape input) (at 80 90 0) (uuid "00000001-0001-0001-0001-000000000018") (effects (font (size 1.27 1.27))))
+  (global_label "BTN_FWD"    (shape input) (at 80 95 0) (uuid "00000001-0001-0001-0001-000000000019") (effects (font (size 1.27 1.27))))
 
-  ;; --- TEXT ANNOTATIONS (component placement guide) ---
-  (text "=== LOWER PCB COMPONENT PLACEMENT ===\n\nU1: ESP32-S3-WROOM-1 — Center-right of board\n     GPIO1→JOY_X, GPIO2→JOY_Y, GPIO3→JOY_SW\n     GPIO4→VBAT_SENSE, GPIO5→BTN_LEFT\n     GPIO6→BTN_RIGHT, GPIO7→BTN_BACK, GPIO8→BTN_FWD\n     GPIO19→USB_DN, GPIO20→USB_DP\n     3V3→3V3, GND→GND\n\nU2: TP4056 (SOP-8) — Near USB-C connector\n     VIN→VBUS, BAT→BAT+, GND→GND\n     PROG→2kΩ→GND (500mA charge)\n     CHRG→1kΩ→LED_RED→GND\n     STDBY→1kΩ→LED_GRN→GND\n\nU3: AP2112K-3.3 (SOT-23-5) — Between battery and ESP32\n     VIN→switched BAT+, VOUT→3V3, GND→GND\n     CE→VIN (always enabled)\n\nU4: USBLC6-2SC6 (SOT-23-6) — Next to USB-C\n     IO1→USB_DP, IO2→USB_DN, VBUS→VBUS, GND→GND\n\nJ1: USB-C Receptacle — Board edge (aligned with base port)\n     VBUS, D+→USB_DP, D-→USB_DN, GND\n     CC1→5.1kΩ→GND, CC2→5.1kΩ→GND\n\nJ2: JST-PH 2-pin — Battery connector\n     Pin1→BAT+, Pin2→GND\n\nJ3: FPC 6-pin 0.5mm — Center of board (cable goes up)\n     Pin1→3V3, Pin2→GND\n     Pin3→BTN_LEFT, Pin4→BTN_RIGHT\n     Pin5→BTN_BACK, Pin6→BTN_FWD\n\nJ4: 5-pin header — Center (joystick module)\n     Pin1→3V3, Pin2→GND\n     Pin3→JOY_X, Pin4→JOY_Y, Pin5→JOY_SW\n\nSW1: Slide switch (SPDT) — Board edge\n     COM→BAT+, NO→VIN_SWITCHED\n\nSW2: Tactile (BOOT) — Near ESP32\n     GPIO0→GND when pressed\n\nSW3: Tactile (RESET) — Near ESP32\n     EN→GND when pressed\n\nPull-ups (10kΩ to 3V3):\n     R_PU1→BTN_LEFT, R_PU2→BTN_RIGHT\n     R_PU3→BTN_BACK, R_PU4→BTN_FWD\n     R_PU5→JOY_SW\n\nBattery voltage divider:\n     BAT+→R5(100kΩ)→VBAT_SENSE→R6(100kΩ)→GND\n\nDecoupling:\n     C1-C4: 100nF on 3V3 near ESP32 (each side)\n     C5: 10µF bulk on 3V3\n     C6: 10µF on VBUS\n     C7: 10µF on BAT+"
+  ;; --- COMPONENT PLACEMENT & WIRING NOTES ---
+  (text "=== LOWER PCB  rev 1.1  ===\n\nU1: Seeed XIAO ESP32-S3 (castellated module)\n     GPIO1->JOY_X, GPIO2->JOY_Y, GPIO3->JOY_SW\n     GPIO4->VBAT_SENSE\n     GPIO5->BTN_LEFT, GPIO6->BTN_RIGHT\n     GPIO7->BTN_BACK, GPIO8->BTN_FWD\n     GPIO19->USB_DN, GPIO20->USB_DP\n     3V3->3V3, GND->GND\n     USB-C end faces board edge (aligned with base ring cutout)\n     KEEPOUT: no copper within 3mm of antenna (module edge)\n\nU2: TP4056 (SOP-8) -- Near USB-C connector\n     VIN->VBUS, BAT->BAT+, GND->GND\n     PROG->R8(2k)->GND  (sets 500mA charge current)\n     CHRG->R9(1k)->LED1(RED)->GND\n     STDBY->R10(1k)->LED2(GRN)->GND\n\nU3: AP2112K-3.3V (SOT-23-5) -- Between battery and XIAO\n     VIN->switched BAT+ (via SW1), VOUT->3V3, GND->GND\n     CE->VIN (always enabled when power is on)\n\nU4: USBLC6-2SC6 (SOT-23-6) -- Next to J1\n     IO1->USB_DP, IO2->USB_DN, VBUS->VBUS, GND->GND\n\nJ1: USB-C receptacle (mid-mount) -- Board edge\n     VBUS, D+->USB_DP, D-->USB_DN, GND\n     CC1->R11(5.1k)->GND, CC2->R12(5.1k)->GND\n\nJ2: JST-PH 2-pin right-angle -- Battery connector\n     Pin1->BAT+, Pin2->GND\n\nJ3: FPC 6-pin 0.5mm top-contact -- Center of board\n     Cable routes upward through body shell to upper PCB J5\n     Pin1->3V3, Pin2->GND\n     Pin3->BTN_LEFT, Pin4->BTN_RIGHT\n     Pin5->BTN_BACK, Pin6->BTN_FWD\n     NOTE: BTN signals have pull-ups on upper PCB, NOT here\n\nJ4: 5-pin header 2.54mm right-angle -- Joystick module\n     Pin1->3V3, Pin2->GND\n     Pin3->JOY_X, Pin4->JOY_Y, Pin5->JOY_SW\n\nSW1: SPDT slide switch (MSK-12C02) -- Board edge\n     COM->BAT+, NO->U3 VIN  (master power)\n\nSW2: Tactile 3x4mm (BOOT) -- Near U1\n     U1 GPIO0->GND when pressed\n\nSW3: Tactile 3x4mm (RESET) -- Near U1\n     U1 EN->GND when pressed\n\nResistors:\n     R_PU5: 10k  3V3->JOY_SW  (joystick click pull-up)\n     R5:   100k  BAT+->VBAT_SENSE (voltage divider top)\n     R6:   100k  VBAT_SENSE->GND  (voltage divider bottom)\n     R7:     2k  TP4056 PROG->GND (charge current 500mA)\n     R8:     1k  TP4056 CHRG->LED1\n     R9:     1k  TP4056 STDBY->LED2\n     R10:  5.1k  USB-C CC1->GND\n     R11:  5.1k  USB-C CC2->GND\n     NOTE: BTN pull-ups R_PU1-R_PU4 REMOVED -- now on upper PCB as R1-R4\n\nDecoupling caps:\n     C1-C4: 100nF 0402 on 3V3 rail (one on each side of U1)\n     C5:    10uF  0805 bulk on 3V3\n     C6:    10uF  0805 on VBUS\n     C7:    10uF  0805 on BAT+\n\nLEDs:\n     LED1: Red 0402 -- charge indicator (on while charging)\n     LED2: Green 0402 -- standby indicator (on when full/idle)"
     (at 120 30 0)
     (uuid "00000001-0001-0001-0001-000000000099")
     (effects (font (size 1.27 1.27)) (justify left))

@@ -5,19 +5,20 @@
   (paper "A4")
 
   (title_block
-    (title "DaPao Space Mouse — Upper PCB")
-    (date "2026-03-11")
-    (rev "1.0")
+    (title "DaPao Space Mouse - Upper PCB")
+    (date "2026-03-20")
+    (rev "1.2")
     (comment 1 "Button board: L/R click + Forward/Back")
-    (comment 2 "Circular PCB ∅54mm, 2-layer, 1.0mm thick")
+    (comment 2 "Circular PCB dia54mm, 2-layer, 1.0mm thick")
+    (comment 3 "Rev 1.2: pull-up resistors moved here from lower PCB")
   )
 
   ;; ============================================================
-  ;; Simple board: 4 switches + FPC connector + decoupling cap
-  ;; All active-low (pull-ups on lower PCB)
+  ;; 4 switches + 4x 10k pull-ups + 100nF decoupling + FPC
+  ;; All active-low. Pull-ups on this board (not lower PCB).
   ;; ============================================================
 
-  ;; --- POWER NETS (from FPC) ---
+  ;; --- POWER NETS (from FPC Pin 1/2) ---
   (global_label "3V3" (shape input) (at 30 40 0) (uuid "00000002-0001-0001-0001-000000000001")
     (effects (font (size 1.27 1.27)))
   )
@@ -25,22 +26,22 @@
     (effects (font (size 1.27 1.27)))
   )
 
-  ;; --- BUTTON NETS ---
-  (global_label "BTN_LEFT" (shape output) (at 80 40 0) (uuid "00000002-0001-0001-0001-000000000010")
+  ;; --- BUTTON NETS (to FPC Pins 3-6) ---
+  (global_label "BTN_LEFT"  (shape output) (at 80 40 0) (uuid "00000002-0001-0001-0001-000000000010")
     (effects (font (size 1.27 1.27)))
   )
   (global_label "BTN_RIGHT" (shape output) (at 80 50 0) (uuid "00000002-0001-0001-0001-000000000011")
     (effects (font (size 1.27 1.27)))
   )
-  (global_label "BTN_BACK" (shape output) (at 80 60 0) (uuid "00000002-0001-0001-0001-000000000012")
+  (global_label "BTN_BACK"  (shape output) (at 80 60 0) (uuid "00000002-0001-0001-0001-000000000012")
     (effects (font (size 1.27 1.27)))
   )
-  (global_label "BTN_FWD" (shape output) (at 80 70 0) (uuid "00000002-0001-0001-0001-000000000013")
+  (global_label "BTN_FWD"   (shape output) (at 80 70 0) (uuid "00000002-0001-0001-0001-000000000013")
     (effects (font (size 1.27 1.27)))
   )
 
-  ;; --- ANNOTATIONS ---
-  (text "=== UPPER PCB COMPONENT PLACEMENT ===\n\nJ5: FPC 6-pin 0.5mm connector\n     Center-bottom of board\n     Pin1→3V3, Pin2→GND\n     Pin3→BTN_LEFT, Pin4→BTN_RIGHT\n     Pin5→BTN_BACK, Pin6→BTN_FWD\n\nSW4: Kailh micro switch (Left click)\n     Top-left quadrant, plunger faces UP\n     One pin → BTN_LEFT\n     Other pin → GND\n\nSW5: Kailh micro switch (Right click)\n     Top-right quadrant, plunger faces UP\n     One pin → BTN_RIGHT\n     Other pin → GND\n\nSW6: Side-mount tactile switch (Back)\n     Left edge of board, plunger faces LEFT (outward)\n     One pin → BTN_BACK\n     Other pin → GND\n\nSW7: Side-mount tactile switch (Forward)\n     Right edge of board, plunger faces RIGHT (outward)\n     One pin → BTN_FWD\n     Other pin → GND\n\nC1: 100nF decoupling cap (0402)\n     Near J5, between 3V3 and GND\n\nMounting: 2× M2 holes\n     Aligned with top frame screw posts"
+  ;; --- COMPONENT PLACEMENT & WIRING NOTES ---
+  (text "=== UPPER PCB  rev 1.2  ===\n\nJ5: FPC 6-pin 0.5mm top-contact connector\n     Center-bottom of board (Y=+15mm from center)\n     Pin1->3V3, Pin2->GND\n     Pin3->BTN_LEFT, Pin4->BTN_RIGHT\n     Pin5->BTN_BACK, Pin6->BTN_FWD\n\nSW4: Kailh 6x6x9.5mm upright through-hole (Left click)\n     Position: X=-10mm, Y=-12mm from board center\n     Plunger faces UP (+Z) -- pressed by left rocker button\n     Pin pair A -> GND\n     Pin pair B -> R1 -> BTN_LEFT (FPC Pin 3)\n\nSW5: Kailh 6x6x9.5mm upright through-hole (Right click)\n     Position: X=+10mm, Y=-12mm from board center\n     Plunger faces UP (+Z) -- pressed by right rocker button\n     Pin pair A -> GND\n     Pin pair B -> R2 -> BTN_RIGHT (FPC Pin 4)\n\nSW6: Kailh 6x6x9.5mm side-mount through-hole (Back)\n     Position: X=-24mm, Y=0 (left board edge)\n     Plunger faces LEFT (outward) through top_frame wall cutout\n     Pin pair A -> GND\n     Pin pair B -> R3 -> BTN_BACK (FPC Pin 5)\n\nSW7: Kailh 6x6x9.5mm side-mount through-hole (Forward)\n     Position: X=+24mm, Y=0 (right board edge)\n     Plunger faces RIGHT (outward) through top_frame wall cutout\n     Pin pair A -> GND\n     Pin pair B -> R4 -> BTN_FWD (FPC Pin 6)\n\nR1: 10k 0402 pull-up  3V3 -> BTN_LEFT\n     Between SW4 signal pin and 3V3 rail\nR2: 10k 0402 pull-up  3V3 -> BTN_RIGHT\n     Between SW5 signal pin and 3V3 rail\nR3: 10k 0402 pull-up  3V3 -> BTN_BACK\n     Between SW6 signal pin and 3V3 rail\nR4: 10k 0402 pull-up  3V3 -> BTN_FWD\n     Between SW7 signal pin and 3V3 rail\n\nC1: 100nF 0402 decoupling cap\n     Between 3V3 rail and GND, near J5\n\nH1: M2 mount hole at X=-15mm, Y=0 (matches top_frame post)\nH2: M2 mount hole at X=+15mm, Y=0 (matches top_frame post)\n\nNOTE: GND is a shared pour on both layers.\nNOTE: All switches active-LOW. Signal reads 3V3 when open, 0V when pressed.\nNOTE: Remove R_PU1-R_PU4 from lower PCB -- pull-ups now live here."
     (at 30 90 0)
     (uuid "00000002-0001-0001-0001-000000000099")
     (effects (font (size 1.27 1.27)) (justify left))
