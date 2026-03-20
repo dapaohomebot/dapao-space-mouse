@@ -19,7 +19,8 @@ Full component list for both PCBs. All prices approximate USD at time of writing
 | SW1 | SPDT slide switch MSK-12C02 (power) | SMD | 1 | $0.10 | LCSC: C431541 |
 | SW2 | Tactile switch 3x4mm (BOOT) | SMD | 1 | $0.05 | LCSC: C318884 |
 | SW3 | Tactile switch 3x4mm (RESET) | SMD | 1 | $0.05 | LCSC: C318884 |
-| R_PU5 | 10kΩ resistor (JOY_SW pull-up only) | 0402 | 1 | $0.01 | generic 0402 |
+| SW_BT | Tactile switch 3x4mm (BT Sync/Pair) — board edge, base_ring cutout | SMD | 1 | $0.05 | LCSC: C318884 |
+| R_PU5, R_PU_BT | 10kΩ resistor (JOY_SW + BT_SW pull-ups) | 0402 | 2 | $0.01 ea | generic 0402 |
 | R5, R6 | 100kΩ resistor (VBAT divider) | 0402 | 2 | $0.01 ea | generic 0402 |
 | R7 | 2kΩ resistor (TP4056 PROG, 500mA) | 0402 | 1 | $0.01 | generic 0402 |
 | R8, R9 | 1kΩ resistor (LED current limit) | 0402 | 2 | $0.01 ea | generic 0402 |

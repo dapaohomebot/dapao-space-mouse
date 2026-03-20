@@ -92,8 +92,16 @@ top_mount_x       = 15;   // X distance from center to PCB M2 mount holes (match
 top_mount_y       = 0;    // Y distance from center to PCB M2 mount holes
 
 // Top frame side switch cutouts (for SW6 Back / SW7 Fwd on upper PCB)
-top_side_sw_w     = 9;    // cutout width through frame wall
-top_side_sw_h     = 5;    // cutout height through frame wall
+// Rev 1.3: widened from 9->10mm to fit Kailh Blue Dot body (~8.75mm + 1.25mm clearance)
+top_side_sw_w     = 10;   // cutout width through frame wall (Blue Dot body ~8.75mm)
+top_side_sw_h     = 6;    // cutout height through frame wall (was 5, +1mm clearance)
+
+// BT sync button cutout (SW_BT on lower PCB, accessible from base_ring wall)
+// Placed at sw_bt_angle degrees around the ring, at height sw_bt_z
+sw_bt_width  = 5;    // tactile button body 3x4mm + clearance
+sw_bt_height = 4;    // matches button height
+sw_bt_z      = 12;   // height from base floor (between USB-C at z=8 and power sw at z=18)
+sw_bt_angle  = 90;   // 90deg from USB-C (left side of base ring when USB-C faces back)
 
 // --- Joystick Module ------------------------------------------
 joy_base_w  = 25;

@@ -1,7 +1,8 @@
 // ============================================================
 // DaPao Space Mouse — Part 2: Base Ring
 // Contains: PCB mounts, USB-C cutout, power switch cutout,
-//           battery compartment, joystick clearance
+//           BT sync button cutout, battery compartment, joystick clearance
+// Rev 1.1: added SW_BT cutout at sw_bt_angle=90deg, z=sw_bt_z
 // Print: upright, supports for USB-C overhang
 // Qty: 1
 // ============================================================
@@ -62,6 +63,13 @@ module base_ring() {
             translate([base_od/2 - base_wall - 1, 0, sw_z])
                 rotate([0, 90, 0])
                     rounded_slot(sw_width, sw_height, base_wall + 2);
+
+        // BT sync button cutout (SW_BT)
+        // Tactile 3x4mm button accessible from outside ring wall
+        rotate([0, 0, sw_bt_angle])
+            translate([base_od/2 - base_wall - 1, 0, sw_bt_z])
+                rotate([0, 90, 0])
+                    rounded_slot(sw_bt_width, sw_bt_height, base_wall + 2);
 
         // Assembly screw holes
         for (i = [0:assy_screw_count-1]) {
