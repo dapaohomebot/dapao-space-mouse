@@ -7,37 +7,29 @@
   )
   (paper "A4")
   (title_block
-    (title "DaPao Space Mouse — Upper PCB")
-    (date "2026-03-19")
-    (rev "1.1")
-    (comment 1 "Circular ∅54mm, 2-layer, 1.0mm thick")
-    (comment 2 "Button board: L/R click + FWD/BACK + FPC connector")
-    (comment 3 "Rev 1.1: Switch + mount positions aligned to case top_frame v3")
+    (title "DaPao Space Mouse - Upper PCB")
+    (date "2026-03-20")
+    (rev "1.3")
+    (comment 1 "Circular dia54mm, 2-layer, 1.0mm thick")
+    (comment 2 "SW4/SW5: Kailh GM 8.0 (3-pin THT Cherry-style)")
+    (comment 3 "SW6/SW7: Kailh Blue Dot SMT side-button")
+    (comment 4 "Rev 1.3: upgraded from 6x6 tactile to micro switches")
   )
 
   (layers
     (0 "F.Cu" signal)
     (31 "B.Cu" signal)
-    (32 "B.Adhes" user "B.Adhesive")
-    (33 "F.Adhes" user "F.Adhesive")
-    (34 "B.Paste" user)
-    (35 "F.Paste" user)
     (36 "B.SilkS" user "B.Silkscreen")
     (37 "F.SilkS" user "F.Silkscreen")
     (38 "B.Mask" user "B.Mask")
     (39 "F.Mask" user "F.Mask")
     (44 "Edge.Cuts" user)
-    (45 "Margin" user)
   )
 
   (setup
     (pad_to_mask_clearance 0.05)
     (aux_axis_origin 0 0)
     (grid_origin 0 0)
-    (pcbplotparams
-      (layerselection 0x00010fc_ffffffff)
-      (plot_on_all_layers_selection 0x0000000_00000000)
-    )
   )
 
   (net 0 "")
@@ -49,9 +41,8 @@
   (net 6 "BTN_FWD")
 
   ;; ============================================================
-  ;; BOARD OUTLINE — Circular ∅54mm, centered at (100,100)
+  ;; BOARD OUTLINE - Circular dia54mm centered at (100,100)
   ;; ============================================================
-
   (gr_circle (center 100 100) (end 127 100)
     (stroke (width 0.1) (type solid))
     (layer "Edge.Cuts")
@@ -60,166 +51,174 @@
 
   ;; ============================================================
   ;; COORDINATE SYSTEM
-  ;; Board center = (100,100) in KiCad coords.
-  ;; Case params (mm from center):
-  ;;   SW4 L-Click:  X=-10, Y=-12 (KiCad Y is inverted → KiCad: 90, 88)
-  ;;   SW5 R-Click:  X=+10, Y=-12 (KiCad: 110, 88)
-  ;;   SW6 Back:     X=-24, Y=0   (KiCad: 76, 100)  ← board left edge
-  ;;   SW7 Forward:  X=+24, Y=0   (KiCad: 124, 100) ← board right edge
-  ;;   H1 Mount:     X=-15, Y=0   (KiCad: 85, 100)
-  ;;   H2 Mount:     X=+15, Y=0   (KiCad: 115, 100)
+  ;; Board center = (100,100). Case params (mm from center):
+  ;;   SW4 L-Click:  X=-10, Y=-12  ->  KiCad (90, 88)
+  ;;   SW5 R-Click:  X=+10, Y=-12  ->  KiCad (110, 88)
+  ;;   SW6 Back:     X=-24, Y=0    ->  KiCad (76, 100)
+  ;;   SW7 Forward:  X=+24, Y=0    ->  KiCad (124, 100)
+  ;;   H1 Mount:     X=-15, Y=0    ->  KiCad (85, 100)
+  ;;   H2 Mount:     X=+15, Y=0    ->  KiCad (115, 100)
   ;; ============================================================
 
   ;; ============================================================
-  ;; MOUNTING HOLES — 2× M2, at X=±15mm from center (Y=0)
-  ;; Matches top_frame case posts: top_mount_x=15, top_mount_y=0
+  ;; MOUNTING HOLES - 2x M2 at X=+-15mm (matches top_frame posts)
   ;; ============================================================
-
   (footprint "MountingHole:MountingHole_2.2mm_M2_Pad"
-    (layer "F.Cu")
-    (uuid "50000001-0001-0001-0001-000000000001")
-    (at 85 100)
+    (layer "F.Cu") (uuid "50000001-0001-0001-0001-000000000001") (at 85 100)
     (property "Reference" "H1" (at 0 -3 0) (layer "F.SilkS") (uuid "50000001-0001-0001-0001-100000000001") (effects (font (size 1 1) (thickness 0.15))))
     (property "Value" "MountingHole_M2" (at 0 3 0) (layer "F.Fab") (uuid "50000001-0001-0001-0001-100000000002") (effects (font (size 1 1) (thickness 0.15))))
     (pad "1" thru_hole circle (at 0 0) (size 4.4 4.4) (drill 2.2) (layers "*.Cu" "*.Mask") (net 0 ""))
   )
-
   (footprint "MountingHole:MountingHole_2.2mm_M2_Pad"
-    (layer "F.Cu")
-    (uuid "50000001-0001-0001-0001-000000000002")
-    (at 115 100)
+    (layer "F.Cu") (uuid "50000001-0001-0001-0001-000000000002") (at 115 100)
     (property "Reference" "H2" (at 0 -3 0) (layer "F.SilkS") (uuid "50000001-0001-0001-0001-200000000001") (effects (font (size 1 1) (thickness 0.15))))
     (property "Value" "MountingHole_M2" (at 0 3 0) (layer "F.Fab") (uuid "50000001-0001-0001-0001-200000000002") (effects (font (size 1 1) (thickness 0.15))))
     (pad "1" thru_hole circle (at 0 0) (size 4.4 4.4) (drill 2.2) (layers "*.Cu" "*.Mask") (net 0 ""))
   )
 
   ;; ============================================================
-  ;; SW4 — Left Click (Kailh micro switch)
-  ;; Position: X=-10mm, Y=-12mm from center → KiCad (90, 88)
-  ;; Plunger faces UP (+Z), pressed by left half-circle button
-  ;; Matches case top_frame: top_sw_x=10, top_sw_offset_y=12
+  ;; SW4 - Kailh GM 8.0 (Left Click)
+  ;; Position: (90, 88) = X=-10, Y=-12 from center
+  ;; 3-pin Cherry-style, 2.54mm pitch: COM | NO | NC
+  ;; Footprint: SW_Push_SPDT_CherryMX (pin spacing 2.54mm)
+  ;; Body: 12.8 x 5.8mm — long axis along X (left-right)
+  ;; Plunger faces UP, pressed by left rocker button plunger nub
+  ;; Wiring: COM->GND, NO->BTN_LEFT+R1, NC->not connected
   ;; ============================================================
-
-  (footprint "Button_Switch_SMD:SW_Push_1P1T_NO_6x6mm_H9.5mm"
-    (layer "F.Cu")
-    (uuid "70000001-0001-0001-0001-000000000001")
-    (at 90 88)
-    (property "Reference" "SW4" (at 0 -5 0) (layer "F.SilkS") (uuid "70000001-0001-0001-0001-100000000001") (effects (font (size 1 1) (thickness 0.15))))
-    (property "Value" "SW_L-Click" (at 0 5 0) (layer "F.Fab") (uuid "70000001-0001-0001-0001-100000000002") (effects (font (size 1 1) (thickness 0.15))))
-    (pad "1" thru_hole rect (at -2.5 0) (size 1.5 1.5) (drill 0.8) (layers "*.Cu" "*.Mask") (net 3 "BTN_LEFT"))
-    (pad "2" thru_hole circle (at 2.5 0) (size 1.5 1.5) (drill 0.8) (layers "*.Cu" "*.Mask") (net 1 "GND"))
+  (footprint "Button_Switch_THT:SW_Push_SPDT_CherryMX_12.8x5.8mm"
+    (layer "F.Cu") (uuid "70000001-0001-0001-0001-000000000001") (at 90 88)
+    (property "Reference" "SW4" (at 0 -6 0) (layer "F.SilkS") (uuid "70000001-0001-0001-0001-100000000001") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "Kailh_GM_8.0" (at 0 6 0) (layer "F.Fab") (uuid "70000001-0001-0001-0001-100000000002") (effects (font (size 1 1) (thickness 0.15))))
+    ;; Pin layout (Cherry-style): 3 pins in a row, 2.54mm pitch
+    ;; Pin 1 = COM (leftmost),  Pin 2 = NO (middle),  Pin 3 = NC (rightmost)
+    (pad "1" thru_hole rect  (at -2.54 0) (size 2.0 2.0) (drill 1.0) (layers "*.Cu" "*.Mask") (net 1 "GND"))
+    (pad "2" thru_hole circle (at 0    0) (size 2.0 2.0) (drill 1.0) (layers "*.Cu" "*.Mask") (net 3 "BTN_LEFT"))
+    (pad "3" thru_hole circle (at 2.54 0) (size 2.0 2.0) (drill 1.0) (layers "*.Cu" "*.Mask") (net 0 ""))
   )
 
   ;; ============================================================
-  ;; SW5 — Right Click (Kailh micro switch)
-  ;; Position: X=+10mm, Y=-12mm from center → KiCad (110, 88)
-  ;; Plunger faces UP (+Z), pressed by right half-circle button
-  ;; Matches case top_frame: top_sw_x=10, top_sw_offset_y=12
+  ;; SW5 - Kailh GM 8.0 (Right Click)
+  ;; Position: (110, 88) = X=+10, Y=-12 from center
+  ;; Same footprint as SW4, mirrored
+  ;; Wiring: COM->GND, NO->BTN_RIGHT+R2, NC->not connected
   ;; ============================================================
-
-  (footprint "Button_Switch_SMD:SW_Push_1P1T_NO_6x6mm_H9.5mm"
-    (layer "F.Cu")
-    (uuid "70000001-0001-0001-0001-000000000002")
-    (at 110 88)
-    (property "Reference" "SW5" (at 0 -5 0) (layer "F.SilkS") (uuid "70000001-0001-0001-0001-200000000001") (effects (font (size 1 1) (thickness 0.15))))
-    (property "Value" "SW_R-Click" (at 0 5 0) (layer "F.Fab") (uuid "70000001-0001-0001-0001-200000000002") (effects (font (size 1 1) (thickness 0.15))))
-    (pad "1" thru_hole rect (at -2.5 0) (size 1.5 1.5) (drill 0.8) (layers "*.Cu" "*.Mask") (net 4 "BTN_RIGHT"))
-    (pad "2" thru_hole circle (at 2.5 0) (size 1.5 1.5) (drill 0.8) (layers "*.Cu" "*.Mask") (net 1 "GND"))
+  (footprint "Button_Switch_THT:SW_Push_SPDT_CherryMX_12.8x5.8mm"
+    (layer "F.Cu") (uuid "70000001-0001-0001-0001-000000000002") (at 110 88)
+    (property "Reference" "SW5" (at 0 -6 0) (layer "F.SilkS") (uuid "70000001-0001-0001-0001-200000000001") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "Kailh_GM_8.0" (at 0 6 0) (layer "F.Fab") (uuid "70000001-0001-0001-0001-200000000002") (effects (font (size 1 1) (thickness 0.15))))
+    (pad "1" thru_hole rect  (at -2.54 0) (size 2.0 2.0) (drill 1.0) (layers "*.Cu" "*.Mask") (net 1 "GND"))
+    (pad "2" thru_hole circle (at 0    0) (size 2.0 2.0) (drill 1.0) (layers "*.Cu" "*.Mask") (net 4 "BTN_RIGHT"))
+    (pad "3" thru_hole circle (at 2.54 0) (size 2.0 2.0) (drill 1.0) (layers "*.Cu" "*.Mask") (net 0 ""))
   )
 
   ;; ============================================================
-  ;; SW6 — Back button (side-mount tactile, at left board edge)
-  ;; Position: X=-24mm (board edge), Y=0 → KiCad (76, 100)
-  ;; Plunger faces LEFT (outward through top_frame side cutout)
-  ;; Side button cap on body shell presses inward to activate
+  ;; SW6 - Kailh Blue Dot SMT Side Button (Back)
+  ;; Position: (76, 100) = X=-24, Y=0 — left board edge
+  ;; SMD, ~8.75mm body, plunger faces LEFT (outward)
+  ;; Rotated 90deg: plunger points toward board edge
+  ;; Wiring: Pin1->GND, Pin2->BTN_BACK+R3
   ;; ============================================================
-
-  (footprint "Button_Switch_THT:SW_Push_1P1T_NO_6x6mm_H9.5mm"
-    (layer "F.Cu")
-    (uuid "70000001-0001-0001-0001-000000000003")
-    (at 76 100 90)
-    (property "Reference" "SW6" (at 0 -5 0) (layer "F.SilkS") (uuid "70000001-0001-0001-0001-300000000001") (effects (font (size 1 1) (thickness 0.15))))
-    (property "Value" "SW_Back" (at 0 5 0) (layer "F.Fab") (uuid "70000001-0001-0001-0001-300000000002") (effects (font (size 1 1) (thickness 0.15))))
-    (pad "1" thru_hole rect (at -2.5 0) (size 1.5 1.5) (drill 0.8) (layers "*.Cu" "*.Mask") (net 5 "BTN_BACK"))
-    (pad "2" thru_hole circle (at 2.5 0) (size 1.5 1.5) (drill 0.8) (layers "*.Cu" "*.Mask") (net 1 "GND"))
+  (footprint "Button_Switch_SMD:SW_Push_Side_8.75mm"
+    (layer "F.Cu") (uuid "70000001-0001-0001-0001-000000000003") (at 76 100 90)
+    (property "Reference" "SW6" (at 0 -6 0) (layer "F.SilkS") (uuid "70000001-0001-0001-0001-300000000001") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "Kailh_BlueDot_Side" (at 0 6 0) (layer "F.Fab") (uuid "70000001-0001-0001-0001-300000000002") (effects (font (size 1 1) (thickness 0.15))))
+    (pad "1" smd rect  (at -2.5 0) (size 1.5 2.0) (layers "F.Cu" "F.Mask") (net 1 "GND"))
+    (pad "2" smd circle (at  2.5 0) (size 1.5 2.0) (layers "F.Cu" "F.Mask") (net 5 "BTN_BACK"))
   )
 
   ;; ============================================================
-  ;; SW7 — Forward button (side-mount tactile, at right board edge)
-  ;; Position: X=+24mm (board edge), Y=0 → KiCad (124, 100)
-  ;; Plunger faces RIGHT (outward through top_frame side cutout)
+  ;; SW7 - Kailh Blue Dot SMT Side Button (Forward)
+  ;; Position: (124, 100) = X=+24, Y=0 — right board edge
+  ;; Plunger faces RIGHT (outward), rotated 270deg
+  ;; Wiring: Pin1->GND, Pin2->BTN_FWD+R4
   ;; ============================================================
-
-  (footprint "Button_Switch_THT:SW_Push_1P1T_NO_6x6mm_H9.5mm"
-    (layer "F.Cu")
-    (uuid "70000001-0001-0001-0001-000000000004")
-    (at 124 100 270)
-    (property "Reference" "SW7" (at 0 -5 0) (layer "F.SilkS") (uuid "70000001-0001-0001-0001-400000000001") (effects (font (size 1 1) (thickness 0.15))))
-    (property "Value" "SW_Forward" (at 0 5 0) (layer "F.Fab") (uuid "70000001-0001-0001-0001-400000000002") (effects (font (size 1 1) (thickness 0.15))))
-    (pad "1" thru_hole rect (at -2.5 0) (size 1.5 1.5) (drill 0.8) (layers "*.Cu" "*.Mask") (net 6 "BTN_FWD"))
-    (pad "2" thru_hole circle (at 2.5 0) (size 1.5 1.5) (drill 0.8) (layers "*.Cu" "*.Mask") (net 1 "GND"))
+  (footprint "Button_Switch_SMD:SW_Push_Side_8.75mm"
+    (layer "F.Cu") (uuid "70000001-0001-0001-0001-000000000004") (at 124 100 270)
+    (property "Reference" "SW7" (at 0 -6 0) (layer "F.SilkS") (uuid "70000001-0001-0001-0001-400000000001") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "Kailh_BlueDot_Side" (at 0 6 0) (layer "F.Fab") (uuid "70000001-0001-0001-0001-400000000002") (effects (font (size 1 1) (thickness 0.15))))
+    (pad "1" smd rect  (at -2.5 0) (size 1.5 2.0) (layers "F.Cu" "F.Mask") (net 1 "GND"))
+    (pad "2" smd circle (at  2.5 0) (size 1.5 2.0) (layers "F.Cu" "F.Mask") (net 6 "BTN_FWD"))
   )
 
   ;; ============================================================
-  ;; J5 — FPC 6-pin connector (bottom of board, routes to lower PCB)
+  ;; R1-R4 - 10k pull-up resistors (0402 SMD)
+  ;; Placed between each switch signal and 3V3 rail
   ;; ============================================================
-
-  (gr_text "FPC J5\n(to lower PCB)"
-    (at 100 117 0)
-    (layer "F.SilkS")
-    (uuid "60000001-0001-0001-0001-000000000005")
-    (effects (font (size 1 1) (thickness 0.15)))
+  (footprint "Resistor_SMD:R_0402_1005Metric"
+    (layer "F.Cu") (uuid "80000001-0001-0001-0001-000000000001") (at 90 82)
+    (property "Reference" "R1" (at 0 -2 0) (layer "F.SilkS") (uuid "80000001-0001-0001-0001-100000000001") (effects (font (size 0.8 0.8) (thickness 0.12))))
+    (property "Value" "10k" (at 0 2 0) (layer "F.Fab") (uuid "80000001-0001-0001-0001-100000000002") (effects (font (size 0.8 0.8) (thickness 0.12))))
+    (pad "1" smd rect  (at -0.56 0) (size 0.7 0.9) (layers "F.Cu" "F.Mask") (net 2 "3V3"))
+    (pad "2" smd circle (at  0.56 0) (size 0.7 0.9) (layers "F.Cu" "F.Mask") (net 3 "BTN_LEFT"))
   )
-
-  ;; ============================================================
-  ;; SILKSCREEN LABELS
-  ;; ============================================================
-
-  (gr_text "FRONT\n(click side)"
-    (at 100 77 0)
-    (layer "F.SilkS")
-    (uuid "60000001-0001-0001-0001-000000000006")
-    (effects (font (size 1.2 1.2) (thickness 0.15)))
+  (footprint "Resistor_SMD:R_0402_1005Metric"
+    (layer "F.Cu") (uuid "80000001-0001-0001-0001-000000000002") (at 110 82)
+    (property "Reference" "R2" (at 0 -2 0) (layer "F.SilkS") (uuid "80000001-0001-0001-0001-200000000001") (effects (font (size 0.8 0.8) (thickness 0.12))))
+    (property "Value" "10k" (at 0 2 0) (layer "F.Fab") (uuid "80000001-0001-0001-0001-200000000002") (effects (font (size 0.8 0.8) (thickness 0.12))))
+    (pad "1" smd rect  (at -0.56 0) (size 0.7 0.9) (layers "F.Cu" "F.Mask") (net 2 "3V3"))
+    (pad "2" smd circle (at  0.56 0) (size 0.7 0.9) (layers "F.Cu" "F.Mask") (net 4 "BTN_RIGHT"))
   )
-
-  (gr_text "SW4 L-CLICK\n↑ X=-10 Y=+12"
-    (at 90 83 0)
-    (layer "F.SilkS")
-    (uuid "60000001-0001-0001-0001-000000000007")
-    (effects (font (size 0.8 0.8) (thickness 0.12)))
+  (footprint "Resistor_SMD:R_0402_1005Metric"
+    (layer "F.Cu") (uuid "80000001-0001-0001-0001-000000000003") (at 82 100)
+    (property "Reference" "R3" (at 0 -2 0) (layer "F.SilkS") (uuid "80000001-0001-0001-0001-300000000001") (effects (font (size 0.8 0.8) (thickness 0.12))))
+    (property "Value" "10k" (at 0 2 0) (layer "F.Fab") (uuid "80000001-0001-0001-0001-300000000002") (effects (font (size 0.8 0.8) (thickness 0.12))))
+    (pad "1" smd rect  (at -0.56 0) (size 0.7 0.9) (layers "F.Cu" "F.Mask") (net 2 "3V3"))
+    (pad "2" smd circle (at  0.56 0) (size 0.7 0.9) (layers "F.Cu" "F.Mask") (net 5 "BTN_BACK"))
   )
-
-  (gr_text "SW5 R-CLICK\n↑ X=+10 Y=+12"
-    (at 110 83 0)
-    (layer "F.SilkS")
-    (uuid "60000001-0001-0001-0001-000000000008")
-    (effects (font (size 0.8 0.8) (thickness 0.12)))
-  )
-
-  (gr_text "SW6\nBACK\n←"
-    (at 73 100 0)
-    (layer "F.SilkS")
-    (uuid "60000001-0001-0001-0001-000000000009")
-    (effects (font (size 0.8 0.8) (thickness 0.12)))
-  )
-
-  (gr_text "SW7\nFWD\n→"
-    (at 127 100 0)
-    (layer "F.SilkS")
-    (uuid "60000001-0001-0001-0001-000000000010")
-    (effects (font (size 0.8 0.8) (thickness 0.12)))
+  (footprint "Resistor_SMD:R_0402_1005Metric"
+    (layer "F.Cu") (uuid "80000001-0001-0001-0001-000000000004") (at 118 100)
+    (property "Reference" "R4" (at 0 -2 0) (layer "F.SilkS") (uuid "80000001-0001-0001-0001-400000000001") (effects (font (size 0.8 0.8) (thickness 0.12))))
+    (property "Value" "10k" (at 0 2 0) (layer "F.Fab") (uuid "80000001-0001-0001-0001-400000000002") (effects (font (size 0.8 0.8) (thickness 0.12))))
+    (pad "1" smd rect  (at -0.56 0) (size 0.7 0.9) (layers "F.Cu" "F.Mask") (net 2 "3V3"))
+    (pad "2" smd circle (at  0.56 0) (size 0.7 0.9) (layers "F.Cu" "F.Mask") (net 6 "BTN_FWD"))
   )
 
   ;; ============================================================
-  ;; ALIGNMENT NOTES (Rev 1.1)
+  ;; C1 - 100nF decoupling (0402)
   ;; ============================================================
-  ;; All positions verified against case/parts/params.scad:
-  ;;
-  ;; SW4 (L-Click):  case top_sw_x=10, top_sw_offset_y=12  ✓
-  ;; SW5 (R-Click):  case top_sw_x=10, top_sw_offset_y=12  ✓
-  ;; SW6 (Back):     at board edge X=-24, top_frame cutout at ±inner_r ✓
-  ;; SW7 (Forward):  at board edge X=+24, top_frame cutout at ±inner_r ✓
-  ;; H1/H2 (Mount):  case top_mount_x=15, top_mount_y=0    ✓
-  ;; PCB diameter:   ∅54mm = frame_id (60 - 2×3)           ✓
+  (footprint "Capacitor_SMD:C_0402_1005Metric"
+    (layer "F.Cu") (uuid "90000001-0001-0001-0001-000000000001") (at 104 114)
+    (property "Reference" "C1" (at 0 -2 0) (layer "F.SilkS") (uuid "90000001-0001-0001-0001-100000000001") (effects (font (size 0.8 0.8) (thickness 0.12))))
+    (property "Value" "100nF" (at 0 2 0) (layer "F.Fab") (uuid "90000001-0001-0001-0001-100000000002") (effects (font (size 0.8 0.8) (thickness 0.12))))
+    (pad "1" smd rect  (at -0.56 0) (size 0.7 0.9) (layers "F.Cu" "F.Mask") (net 2 "3V3"))
+    (pad "2" smd circle (at  0.56 0) (size 0.7 0.9) (layers "F.Cu" "F.Mask") (net 1 "GND"))
+  )
+
+  ;; ============================================================
+  ;; J5 - FPC 6-pin 0.5mm top-contact connector
+  ;; Center-bottom at (100, 115) = Y=+15mm from board center
+  ;; ============================================================
+  (footprint "Connector_FFC-FPC:Hirose_FH12-6S-0.5SH_1x06-1MP_P0.5mm_Horizontal"
+    (layer "F.Cu") (uuid "60000001-0001-0001-0001-000000000001") (at 100 115)
+    (property "Reference" "J5" (at 0 -5 0) (layer "F.SilkS") (uuid "60000001-0001-0001-0001-100000000001") (effects (font (size 1 1) (thickness 0.15))))
+    (property "Value" "FPC_6pin_0.5mm" (at 0 5 0) (layer "F.Fab") (uuid "60000001-0001-0001-0001-100000000002") (effects (font (size 1 1) (thickness 0.15))))
+    (pad "1" smd rect  (at -1.25 0) (size 0.4 1.5) (layers "F.Cu" "F.Mask") (net 2 "3V3"))
+    (pad "2" smd rect  (at -0.75 0) (size 0.4 1.5) (layers "F.Cu" "F.Mask") (net 1 "GND"))
+    (pad "3" smd rect  (at -0.25 0) (size 0.4 1.5) (layers "F.Cu" "F.Mask") (net 3 "BTN_LEFT"))
+    (pad "4" smd rect  (at  0.25 0) (size 0.4 1.5) (layers "F.Cu" "F.Mask") (net 4 "BTN_RIGHT"))
+    (pad "5" smd rect  (at  0.75 0) (size 0.4 1.5) (layers "F.Cu" "F.Mask") (net 5 "BTN_BACK"))
+    (pad "6" smd rect  (at  1.25 0) (size 0.4 1.5) (layers "F.Cu" "F.Mask") (net 6 "BTN_FWD"))
+  )
+
+  ;; ============================================================
+  ;; SILKSCREEN
+  ;; ============================================================
+  (gr_text "SW4\nGM8.0\nL-CLICK\nplunger UP" (at 90 80 0) (layer "F.SilkS") (uuid "a0000001") (effects (font (size 0.8 0.8) (thickness 0.12))))
+  (gr_text "SW5\nGM8.0\nR-CLICK\nplunger UP" (at 110 80 0) (layer "F.SilkS") (uuid "a0000002") (effects (font (size 0.8 0.8) (thickness 0.12))))
+  (gr_text "SW6\nBACK\n<-" (at 73 100 0) (layer "F.SilkS") (uuid "a0000003") (effects (font (size 0.8 0.8) (thickness 0.12))))
+  (gr_text "SW7\nFWD\n->" (at 127 100 0) (layer "F.SilkS") (uuid "a0000004") (effects (font (size 0.8 0.8) (thickness 0.12))))
+  (gr_text "FRONT ->" (at 100 76 0) (layer "F.SilkS") (uuid "a0000005") (effects (font (size 1.2 1.2) (thickness 0.15))))
+  (gr_text "J5 FPC\n(to lower PCB)" (at 100 120 0) (layer "F.SilkS") (uuid "a0000006") (effects (font (size 0.9 0.9) (thickness 0.12))))
+
+  ;; ============================================================
+  ;; DESIGN NOTES
+  ;; ============================================================
+  ;; GM 8.0 body is 12.8x5.8mm -- fits within the 54mm board with
+  ;; some margin. Verify no overlap with H1/H2 mount holes.
+  ;; Blue Dot body ~8.75mm -- positioned at board edge X=+-24mm,
+  ;; plunger protrudes slightly outside board edge through top_frame cutout.
+  ;; Check top_frame side cutout size accommodates Blue Dot body (update
+  ;; top_side_sw_w/top_side_sw_h in params.scad if needed).
+  ;; NC pins on GM 8.0 left floating (unconnected).
 
 )

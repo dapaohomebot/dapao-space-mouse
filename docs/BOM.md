@@ -40,10 +40,10 @@ Full component list for both PCBs. All prices approximate USD at time of writing
 
 | Ref | Description | Package | Qty | Approx Price | Source / Part # |
 |-----|-------------|---------|-----|-------------|-----------------|
-| SW4 | Kailh micro switch 6x6mm upright (L-click) | Through-hole | 1 | $0.30 | LCSC: C455292 |
-| SW5 | Kailh micro switch 6x6mm upright (R-click) | Through-hole | 1 | $0.30 | LCSC: C455292 |
-| SW6 | Kailh micro switch 6x6mm side-mount (Back) | Through-hole | 1 | $0.35 | LCSC: C455292 (rotated 90°) |
-| SW7 | Kailh micro switch 6x6mm side-mount (Fwd) | Through-hole | 1 | $0.35 | LCSC: C455292 (rotated 90°) |
+| SW4 | Kailh GM 8.0 micro switch (Left click) | 3-pin THT Cherry-style | 1 | $0.80 | LCSC: C5333969 / kailhswitch.com |
+| SW5 | Kailh GM 8.0 micro switch (Right click) | 3-pin THT Cherry-style | 1 | $0.80 | LCSC: C5333969 / kailhswitch.com |
+| SW6 | Kailh Blue Dot SMT side-button (Back) | SMD side-actuated | 1 | $0.60 | kailhswitch.com / mechanicalkeyboards.co.id |
+| SW7 | Kailh Blue Dot SMT side-button (Forward) | SMD side-actuated | 1 | $0.60 | kailhswitch.com / mechanicalkeyboards.co.id |
 | R1–R4 | 10kΩ pull-up resistors (BTN_LEFT/RIGHT/BACK/FWD) | 0402 | 4 | $0.01 ea | generic 0402 |
 | J5 | FPC connector 6-pin 0.5mm top-contact | SMD | 1 | $0.20 | LCSC: C11021 |
 | C1 | 100nF ceramic cap (3V3 decoupling) | 0402 | 1 | $0.01 | generic 0402 |
