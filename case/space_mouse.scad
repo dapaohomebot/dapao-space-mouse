@@ -31,9 +31,9 @@ include <parts/base_plate.scad>
 include <parts/base_ring.scad>
 include <parts/body_shell.scad>
 include <parts/top_frame.scad>
-include <parts/button_top_left.scad>
-include <parts/button_top_right.scad>
-include <parts/button_side.scad>
+include <parts/button_top_left.scad>   // defines top_button_left()
+include <parts/button_top_right.scad>  // defines top_button_right()
+include <parts/button_side.scad>       // defines side_button_cap()
 include <parts/joystick_coupler.scad>
 
 
@@ -87,11 +87,11 @@ module assembly() {
 
     color("White", 0.92)
         translate([0, 0, top_z + top_frame_height + e*2.5])
-            top_button(-1);
+            top_button_left();
 
     color("WhiteSmoke", 0.92)
         translate([0, 0, top_z + top_frame_height + e*2.5])
-            top_button(1);
+            top_button_right();
 
     color("LightGray", 0.9)
         translate([0, 0, side_btn_z + e])
@@ -125,8 +125,8 @@ else if (RENDER_PART == "base_plate")      { base_plate(); }
 else if (RENDER_PART == "base_ring")       { base_ring(); }
 else if (RENDER_PART == "body")            { body_shell(); }
 else if (RENDER_PART == "top_frame")       { top_frame(); }
-else if (RENDER_PART == "button_top_left") { top_button(-1); }
-else if (RENDER_PART == "button_top_right"){ top_button(1); }
+else if (RENDER_PART == "button_top_left") { top_button_left(); }
+else if (RENDER_PART == "button_top_right"){ top_button_right(); }
 else if (RENDER_PART == "button_side")     { side_button_cap(); }
 else if (RENDER_PART == "joystick_coupler"){ joystick_coupler(); }
 else {
