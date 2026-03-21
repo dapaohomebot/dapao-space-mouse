@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Generate Gerber + drill files for DaPao Space Mouse PCBs.
-Rev 1.3 Lower PCB layout:
+Rev 2.0 Lower PCB layout:
   - Joystick centered on board
   - XIAO ESP32-S3 at north, USB-C facing north (board edge)
   - FPC J3 between joystick and south edge
@@ -194,9 +194,9 @@ XIAO_X,  XIAO_Y  = BX,       BY - 30.0   # U1 XIAO center (100, 70)
 USBC_X,  USBC_Y  = BX,       BY - 43.0   # J1 USB-C at north edge (100, 57)
 JOY_X,   JOY_Y   = BX,       BY          # J4 Joystick at center (100, 100)
 FPC_X,   FPC_Y   = BX,       BY + 20.0   # J3 FPC (100, 120)
-TP_X,    TP_Y    = BX + 18,  BY - 18.0   # U2 TP4056 (118, 82)
-LDO_X,   LDO_Y   = BX + 18,  BY -  5.0   # U3 LDO    (118, 95)
-ESD_X,   ESD_Y   = BX + 18,  BY - 32.0   # U4 ESD    (118, 68)
+# U2 TP4056 REMOVED - XIAO handles charging internally
+# U4 USBLC6 REMOVED - XIAO handles USB ESD internally
+LDO_X,   LDO_Y   = BX + 18,  BY -  5.0   # U3 LDO    (118, 95) - powers peripherals
 BAT_X,   BAT_Y   = BX - 18,  BY + 15.0   # J2 Battery (82, 115)
 SW1_X,   SW1_Y   = BX - 42,  BY          # SW1 Power west edge (58, 100)
 SWBT_X,  SWBT_Y  = BX,       BY + 40.0   # SW_BT south edge (100, 140)
@@ -278,14 +278,7 @@ fcu.append(f"D{apt}*")
 for dx in [-2.5, 2.5]:
     fcu.append(f"X{int((FPC_X+dx)*1e6):+010d}Y{int((FPC_Y+0.8)*1e6):+010d}D03*")
 
-# --- U2 TP4056 SOP-8 (NE quadrant) ---
-apt = 36
-fcu.append(f"%ADD{apt}R,0.60X1.60*%")
-fcu.append(f"D{apt}*")
-for i in range(4):
-    py = TP_Y - 1.905 + i*1.27
-    fcu.append(f"X{int((TP_X-1.905)*1e6):+010d}Y{int(py*1e6):+010d}D03*")
-    fcu.append(f"X{int((TP_X+1.905)*1e6):+010d}Y{int(py*1e6):+010d}D03*")
+# U2 TP4056 REMOVED
 
 # --- U3 AP2112K LDO SOT-23-5 (east) ---
 apt = 37
@@ -296,13 +289,7 @@ for i,dx in enumerate([-0.95, 0, 0.95]):
 for dx in [-0.95, 0.95]:
     fcu.append(f"X{int((LDO_X+dx)*1e6):+010d}Y{int((LDO_Y-1.4)*1e6):+010d}D03*")
 
-# --- U4 USBLC6 ESD SOT-23-6 (NE near USB-C) ---
-apt = 38
-fcu.append(f"%ADD{apt}R,0.55X1.00*%")
-fcu.append(f"D{apt}*")
-for i,dx in enumerate([-0.95, 0, 0.95]):
-    fcu.append(f"X{int((ESD_X+dx)*1e6):+010d}Y{int((ESD_Y+1.4)*1e6):+010d}D03*")
-    fcu.append(f"X{int((ESD_X+dx)*1e6):+010d}Y{int((ESD_Y-1.4)*1e6):+010d}D03*")
+# U4 USBLC6 REMOVED
 
 # --- J2 JST-PH 2-pin battery (SW quadrant) ---
 apt = 39
@@ -338,34 +325,30 @@ apt = 50
 fcu.append(f"%ADD{apt}R,0.60X0.80*%")
 fcu.append(f"D{apt}*")
 passives_0402 = [
-    # R_PU5: JOY_SW pull-up near joystick NE
+    # R_PU5: JOY_SW pull-up (GPIO3), near J4 joystick NE
     (JOY_X+8, JOY_Y-8), (JOY_X+10, JOY_Y-8),
-    # R_PU_BT: BT sync pull-up near SW_BT
+    # R_PU_BT: BT sync pull-up (GPIO9), near SW_BT
     (SWBT_X+4, SWBT_Y-4), (SWBT_X+6, SWBT_Y-4),
-    # R5/R6: VBAT divider near XIAO GPIO4
-    (XIAO_X-12, XIAO_Y+6), (XIAO_X-12, XIAO_Y+8),
-    # R7: TP4056 PROG
-    (TP_X-5, TP_Y+5), (TP_X-5, TP_Y+7),
-    # R8/R9: LED resistors
-    (TP_X+5, TP_Y+2), (TP_X+5, TP_Y+4),
-    # R10/R11: CC1/CC2 for USB-C
+    # R10/R11: USB-C CC1/CC2 (5.1k), near J1
     (USBC_X+5, USBC_Y+3), (USBC_X+5, USBC_Y+5),
-    # C1-C5: decoupling on 3V3 rail near XIAO
-    (XIAO_X-6, XIAO_Y+12),(XIAO_X-4,XIAO_Y+12),
-    (XIAO_X-2, XIAO_Y+12),(XIAO_X,   XIAO_Y+12),
-    (XIAO_X+2, XIAO_Y+12),
-    # C6/C7: bulk caps on VBUS and BAT+
-    (TP_X-5, TP_Y-4), (TP_X-5, TP_Y-6),
+    # C1-C3: 100nF 0402 decoupling on 3V3 near U1
+    (XIAO_X-6, XIAO_Y+12),(XIAO_X-4, XIAO_Y+12),(XIAO_X-2, XIAO_Y+12),
+    # REMOVED: R5/R6 VBAT divider (GPIO10/ADC_BAT onboard on XIAO)
+    # REMOVED: R7/R8/R9 TP4056 resistors (U2 removed)
+    # REMOVED: C6 VBUS bulk (XIAO handles internally)
 ]
 for px,py in passives_0402:
     fcu.append(f"X{int(px*1e6):+010d}Y{int(py*1e6):+010d}D03*")
 
-# --- LEDs (0402) ---
+# 0805 bulk caps
 apt = 51
-fcu.append(f"%ADD{apt}R,0.60X0.80*%")
+fcu.append(f"%ADD{apt}R,2.00X1.25*%")
 fcu.append(f"D{apt}*")
-for lx,ly in [(TP_X+7, TP_Y-2), (TP_X+7, TP_Y+1)]:
-    fcu.append(f"X{int(lx*1e6):+010d}Y{int(ly*1e6):+010d}D03*")
+# C4: 10uF bulk 3V3, near U3
+fcu.append(f"X{int((LDO_X+5)*1e6):+010d}Y{int((LDO_Y+2)*1e6):+010d}D03*")
+# C5: 10uF bulk BAT+, near J2
+fcu.append(f"X{int((BAT_X+5)*1e6):+010d}Y{int((BAT_Y-3)*1e6):+010d}D03*")
+# LEDs REMOVED (U2 TP4056 gone; XIAO has its own charge LED onboard)
 
 write_gerber(f"{LOWER_OUT}/lower_pcb-F_Cu.gbr", [("F.Cu", fcu)])
 
@@ -391,7 +374,7 @@ silk += silk_cross(XIAO_X, XIAO_Y)
 silk += silk_label(XIAO_X, XIAO_Y-13, "U1", scale=0.55)
 silk += silk_label(XIAO_X, XIAO_Y-11, "XIAO ESP32-S3", scale=0.40)
 # GPIO tick marks + net labels (left side, north=top)
-for i,(net) in enumerate(["3V3","GND","G1-JOY-X","G2-JOY-Y","G3-JOY-SW","G4-VBAT","GND"]):
+for i,(net) in enumerate(["3V3","GND","G1-JOY-X","G2-JOY-Y","G3-JOY-SW","G10-ADC-BAT","GND"]):
     py = XIAO_Y - 9.0 + i*3.0
     silk += silk_line(XIAO_X-8.75, py, XIAO_X-9.5, py)
     silk += silk_label(XIAO_X-13, py, net, scale=0.28)
@@ -433,13 +416,7 @@ for i,net in enumerate(["3V3","GND","BTN-L","BTN-R","BCK","FWD"]):
     silk += silk_line(px, FPC_Y+2.0, px, FPC_Y+2.8)
     silk += silk_label(px, FPC_Y+3.0, str(i+1), scale=0.22)
 
-# ---- U2 TP4056 ----
-silk += silk_box(TP_X, TP_Y, 5.0, 6.5)
-silk += silk_pin1(TP_X-2.5, TP_Y-3.25)
-silk += silk_label(TP_X, TP_Y-5.5, "U2 TP4056", scale=0.38)
-silk += silk_label(TP_X, TP_Y-4.0, "LIPO CHARGER", scale=0.30)
-silk += silk_label(TP_X-3.5, TP_Y-2.5, "VIN", scale=0.28)
-silk += silk_label(TP_X+3.5, TP_Y-2.5, "BAT+", scale=0.28)
+# U2 TP4056 REMOVED - no silk
 
 # ---- U3 LDO AP2112K ----
 silk += silk_box(LDO_X, LDO_Y, 3.5, 3.5)
@@ -447,11 +424,7 @@ silk += silk_pin1(LDO_X-1.75, LDO_Y-1.75)
 silk += silk_label(LDO_X, LDO_Y-3.5, "U3 LDO", scale=0.35)
 silk += silk_label(LDO_X, LDO_Y-2.2, "3V3 REG", scale=0.28)
 
-# ---- U4 ESD USBLC6 ----
-silk += silk_box(ESD_X, ESD_Y, 3.5, 4.0)
-silk += silk_pin1(ESD_X-1.75, ESD_Y-2.0)
-silk += silk_label(ESD_X, ESD_Y-4.0, "U4 ESD", scale=0.35)
-silk += silk_label(ESD_X, ESD_Y-2.7, "USB PROT", scale=0.28)
+# U4 USBLC6 REMOVED - no silk
 
 # ---- J2 Battery connector ----
 silk += silk_box(BAT_X, BAT_Y, 9.0, 6.0)
@@ -478,9 +451,7 @@ silk += silk_box(XIAO_X+12, XIAO_Y+4, 4.5, 3.5)
 silk += silk_label(XIAO_X+12, XIAO_Y+6.5, "SW3", scale=0.35)
 silk += silk_label(XIAO_X+12, XIAO_Y+7.8, "RESET", scale=0.28)
 
-# ---- LED1/LED2 ----
-silk += silk_label(TP_X+7, TP_Y-3.5, "LED1 RED CHG", scale=0.28)
-silk += silk_label(TP_X+7, TP_Y+0.5, "LED2 GRN FULL", scale=0.28)
+# LED1/LED2 REMOVED - XIAO has onboard charge LED
 
 # ---- Mounting holes ----
 for hx,hy in mount_holes:
@@ -494,7 +465,7 @@ silk += silk_line(BX-0.8, BY-40.2, BX, BY-41.5)
 silk += silk_line(BX+0.8, BY-40.2, BX, BY-41.5)
 silk += silk_label(BX, BY-43, "FWD", scale=0.35)
 # Board title center bottom
-silk += silk_label(BX, BY+38, "DAPAO LOWER PCB R1.3", scale=0.35)
+silk += silk_label(BX, BY+38, "DAPAO LOWER PCB R2.0", scale=0.35)
 
 write_gerber(f"{LOWER_OUT}/lower_pcb-F_SilkS.gbr", [("F.SilkS", silk)])
 
