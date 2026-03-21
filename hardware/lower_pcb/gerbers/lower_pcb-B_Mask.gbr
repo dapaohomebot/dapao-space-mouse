@@ -1,9 +1,9 @@
 %FSLAX46Y46*%
 %MOMM*%
 %LPD*%
-G04 DaPao Space Mouse Gerber*
-G04 Layer: B.Mask*
-%ADD10C,0.10*%
+G04 DaPao Space Mouse rev1.3*
+G04 B.Mask*
+%ADD10C,0.100*%
 D10*
 X+143700000Y+100000000D02*
 X+143640110Y+102287081D01*
