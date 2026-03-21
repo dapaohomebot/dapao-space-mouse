@@ -254,15 +254,32 @@ fcu.append(f"D{apt}*")
 for dx in [-2.5, 2.5]:
     fcu.append(f"X{int((USBC_X+dx)*1e6):+010d}Y{int((USBC_Y+1.5)*1e6):+010d}D03*")
 
-# --- J4 Joystick module (centered on board) ---
-# 5-pin right-angle header, 2.54mm pitch, module center at JOY_X/Y
-# Header pins on south edge of module, spanning X=-5.08 to +5.08 from center
+# --- J4 Alps RKJXV1224005 (direct THT solder, board center) ---
+# Body: 18.2 x 21.7mm. 10 pins total:
+# Signal pins (1.0mm drill, 1.8mm pad):
+#   X-axis: CCW at (-6.4, -7.0), Wiper at (-3.0, -7.0), CW at (+0.4, -7.0)
+#   Y-axis: CCW at (-6.4, +7.0), Wiper at (-3.0, +7.0), CW at (+0.4, +7.0)  [approx from Alps datasheet]
+#   SW pins: (+3.8, -5.0) and (+3.8, +5.0)
+# Mounting legs (1.5mm drill, 2.5mm pad, tie to GND):
+#   (-7.7, -8.8), (+7.7, -8.8), (-7.7, +8.8), (+7.7, +8.8)
 apt = 33
-fcu.append(f"%ADD{apt}C,2.00*%")
+fcu.append(f"%ADD{apt}C,1.80*%")
 fcu.append(f"D{apt}*")
-for i in range(5):
-    px = JOY_X - 5.08 + i*2.54
-    fcu.append(f"X{int(px*1e6):+010d}Y{int((JOY_Y+12.5)*1e6):+010d}D03*")
+# X-axis pins
+for px in [-6.4, -3.0, 0.4]:
+    fcu.append(f"X{int((JOY_X+px)*1e6):+010d}Y{int((JOY_Y-7.0)*1e6):+010d}D03*")
+# Y-axis pins
+for px in [-6.4, -3.0, 0.4]:
+    fcu.append(f"X{int((JOY_X+px)*1e6):+010d}Y{int((JOY_Y+7.0)*1e6):+010d}D03*")
+# SW pins
+for py in [-5.0, 5.0]:
+    fcu.append(f"X{int((JOY_X+3.8)*1e6):+010d}Y{int((JOY_Y+py)*1e6):+010d}D03*")
+# Mounting legs (GND, 2.5mm pad)
+apt = 34
+fcu.append(f"%ADD{apt}C,2.50*%")
+fcu.append(f"D{apt}*")
+for mx,my in [(-7.7,-8.8),(7.7,-8.8),(-7.7,8.8),(7.7,8.8)]:
+    fcu.append(f"X{int((JOY_X+mx)*1e6):+010d}Y{int((JOY_Y+my)*1e6):+010d}D03*")
 
 # --- J3 FPC 6-pin 0.5mm (south of joystick) ---
 apt = 34
@@ -394,16 +411,29 @@ silk += silk_line(USBC_X-0.8, USBC_Y-3.8, USBC_X, USBC_Y-4.5)
 silk += silk_line(USBC_X+0.8, USBC_Y-3.8, USBC_X, USBC_Y-4.5)
 silk += silk_label(USBC_X, USBC_Y-5.5, "N", scale=0.4)
 
-# ---- J4 Joystick (center) ----
-silk += silk_box(JOY_X, JOY_Y, 25.0, 25.0)
+# ---- J4 Alps RKJXV1224005 (center, direct THT) ----
+silk += silk_box(JOY_X, JOY_Y, 18.2, 21.7)
 silk += silk_cross(JOY_X, JOY_Y, 3.0)
-silk += silk_label(JOY_X, JOY_Y-9, "J4 JOYSTICK", scale=0.45)
-silk += silk_label(JOY_X, JOY_Y-7, "KY-023 CENTER", scale=0.35)
-# Header pin labels south side
-for i,net in enumerate(["3V3","GND","JOY-X","JOY-Y","JOY-SW"]):
-    px = JOY_X - 5.08 + i*2.54
-    silk += silk_line(px, JOY_Y+12.5, px, JOY_Y+14.0)
-    silk += silk_label(px, JOY_Y+15.0, net, scale=0.25)
+silk += silk_label(JOY_X, JOY_Y-3, "J4 ALPS RKJXV", scale=0.42)
+silk += silk_label(JOY_X, JOY_Y-1, "DIRECT SOLDER", scale=0.32)
+# X-axis pin labels
+for px, net in [(-6.4,"3V3"),(-3.0,"JOY-X"),(0.4,"GND")]:
+    silk += silk_line(JOY_X+px, JOY_Y-7.0, JOY_X+px, JOY_Y-9.5)
+    silk += silk_label(JOY_X+px, JOY_Y-10.5, net, scale=0.25)
+silk += silk_label(JOY_X-4.5, JOY_Y-12, "X-AXIS", scale=0.28)
+# Y-axis pin labels
+for px, net in [(-6.4,"3V3"),(-3.0,"JOY-Y"),(0.4,"GND")]:
+    silk += silk_line(JOY_X+px, JOY_Y+7.0, JOY_X+px, JOY_Y+9.5)
+    silk += silk_label(JOY_X+px, JOY_Y+10.5, net, scale=0.25)
+silk += silk_label(JOY_X-4.5, JOY_Y+12, "Y-AXIS", scale=0.28)
+# SW pin labels
+for py, net in [(-5.0,"JOY-SW"),(5.0,"GND")]:
+    silk += silk_line(JOY_X+3.8, JOY_Y+py, JOY_X+5.5, JOY_Y+py)
+    silk += silk_label(JOY_X+7.0, JOY_Y+py, net, scale=0.25)
+silk += silk_label(JOY_X+6.0, JOY_Y, "SW", scale=0.28)
+# Mounting leg markers
+for mx,my in [(-7.7,-8.8),(7.7,-8.8),(-7.7,8.8),(7.7,8.8)]:
+    silk += silk_cross(JOY_X+mx, JOY_Y+my, 1.0)
 
 # ---- J3 FPC ----
 silk += silk_box(FPC_X, FPC_Y, 5.5, 3.5)
@@ -482,9 +512,15 @@ for hx,hy in mount_holes:
 lower_holes += [(USBC_X-2.5, USBC_Y+1.5, 0.8, True),
                 (USBC_X+2.5, USBC_Y+1.5, 0.8, True)]
 
-# J4 Joystick 5-pin header (through-hole)
-for i in range(5):
-    lower_holes.append((JOY_X-5.08+i*2.54, JOY_Y+12.5, 0.8, True))
+# J4 Alps RKJXV THT signal pins (1.0mm drill, 8 pins)
+for px in [-6.4, -3.0, 0.4]:
+    lower_holes.append((JOY_X+px, JOY_Y-7.0, 1.0, True))   # X-axis
+    lower_holes.append((JOY_X+px, JOY_Y+7.0, 1.0, True))   # Y-axis
+for py in [-5.0, 5.0]:
+    lower_holes.append((JOY_X+3.8, JOY_Y+py, 1.0, True))   # SW
+# Mounting legs (1.5mm drill, 4 legs, plated)
+for mx,my in [(-7.7,-8.8),(7.7,-8.8),(-7.7,8.8),(7.7,8.8)]:
+    lower_holes.append((JOY_X+mx, JOY_Y+my, 1.5, True))
 
 # J2 JST-PH through-hole
 lower_holes += [(BAT_X-1, BAT_Y, 0.8, True), (BAT_X+1, BAT_Y, 0.8, True)]
