@@ -108,6 +108,76 @@ def silk_pin1(cx, cy, apt=10):
             f"X{int(cx*1e6):+010d}Y{int((cy+s)*1e6):+010d}D01*",
             f"X{int((cx-s)*1e6):+010d}Y{int((cy-s)*1e6):+010d}D01*"]
 
+def silk_label(cx, cy, text, apt=10, scale=0.7):
+    """
+    Render a text label using a simple 5x7 dot-matrix stroke font.
+    Each character is drawn as line segments; label centered on (cx, cy).
+    scale: mm per unit (0.7mm gives ~1mm char height)
+    """
+    # Minimal stroke font: uppercase + digits + common symbols
+    # Each char: list of strokes [(x0,y0,x1,y1), ...] in a 4x6 grid
+    FONT = {
+        'A':[(0,6,2,0),(2,0,4,6),(1,3,3,3)],
+        'B':[(0,0,0,6),(0,0,3,0),(0,3,3,3),(0,6,3,6),(3,0,4,1),(3,3,4,4),(3,1,3,3),(3,4,3,6)],
+        'C':[(4,1,3,0),(3,0,1,0),(1,0,0,1),(0,1,0,5),(0,5,1,6),(1,6,3,6),(3,6,4,5)],
+        'D':[(0,0,0,6),(0,0,2,0),(2,0,4,2),(4,2,4,4),(4,4,2,6),(2,6,0,6)],
+        'E':[(0,0,0,6),(0,0,4,0),(0,3,3,3),(0,6,4,6)],
+        'F':[(0,0,0,6),(0,0,4,0),(0,3,3,3)],
+        'G':[(4,1,3,0),(3,0,1,0),(1,0,0,1),(0,1,0,5),(0,5,1,6),(1,6,3,6),(3,6,4,5),(4,5,4,3),(4,3,2,3)],
+        'H':[(0,0,0,6),(4,0,4,6),(0,3,4,3)],
+        'I':[(1,0,3,0),(2,0,2,6),(1,6,3,6)],
+        'J':[(1,0,3,0),(3,0,3,5),(3,5,2,6),(2,6,1,6),(1,6,0,5)],
+        'K':[(0,0,0,6),(0,3,4,0),(0,3,4,6)],
+        'L':[(0,0,0,6),(0,6,4,6)],
+        'M':[(0,6,0,0),(0,0,2,3),(2,3,4,0),(4,0,4,6)],
+        'N':[(0,6,0,0),(0,0,4,6),(4,6,4,0)],
+        'O':[(1,0,3,0),(3,0,4,1),(4,1,4,5),(4,5,3,6),(3,6,1,6),(1,6,0,5),(0,5,0,1),(0,1,1,0)],
+        'P':[(0,0,0,6),(0,0,3,0),(3,0,4,1),(4,1,4,3),(4,3,3,3),(3,3,0,3)],
+        'Q':[(1,0,3,0),(3,0,4,1),(4,1,4,5),(4,5,3,6),(3,6,1,6),(1,6,0,5),(0,5,0,1),(0,1,1,0),(3,4,4,6)],
+        'R':[(0,0,0,6),(0,0,3,0),(3,0,4,1),(4,1,4,3),(4,3,3,3),(3,3,0,3),(2,3,4,6)],
+        'S':[(4,1,3,0),(3,0,1,0),(1,0,0,1),(0,1,0,3),(0,3,4,3),(4,3,4,5),(4,5,3,6),(3,6,1,6),(1,6,0,5)],
+        'T':[(0,0,4,0),(2,0,2,6)],
+        'U':[(0,0,0,5),(0,5,1,6),(1,6,3,6),(3,6,4,5),(4,5,4,0)],
+        'V':[(0,0,2,6),(2,6,4,0)],
+        'W':[(0,0,1,6),(1,6,2,3),(2,3,3,6),(3,6,4,0)],
+        'X':[(0,0,4,6),(4,0,0,6)],
+        'Y':[(0,0,2,3),(4,0,2,3),(2,3,2,6)],
+        'Z':[(0,0,4,0),(4,0,0,6),(0,6,4,6)],
+        '0':[(1,0,3,0),(3,0,4,1),(4,1,4,5),(4,5,3,6),(3,6,1,6),(1,6,0,5),(0,5,0,1),(0,1,1,0),(1,1,3,5)],
+        '1':[(1,1,2,0),(2,0,2,6),(1,6,3,6)],
+        '2':[(0,1,1,0),(1,0,3,0),(3,0,4,1),(4,1,4,3),(4,3,0,6),(0,6,4,6)],
+        '3':[(0,1,1,0),(1,0,3,0),(3,0,4,1),(4,1,4,2),(4,2,2,3),(2,3,4,4),(4,4,4,5),(4,5,3,6),(3,6,1,6),(1,6,0,5)],
+        '4':[(3,0,0,4),(0,4,4,4),(4,4,4,0),(4,4,4,6)],
+        '5':[(4,0,0,0),(0,0,0,3),(0,3,3,3),(3,3,4,4),(4,4,4,5),(4,5,3,6),(3,6,1,6),(1,6,0,5)],
+        '6':[(4,1,3,0),(3,0,1,0),(1,0,0,1),(0,1,0,5),(0,5,1,6),(1,6,3,6),(3,6,4,5),(4,5,4,3),(4,3,0,3)],
+        '7':[(0,0,4,0),(4,0,2,6)],
+        '8':[(1,0,3,0),(3,0,4,1),(4,1,4,2),(4,2,3,3),(3,3,4,4),(4,4,4,5),(4,5,3,6),(3,6,1,6),(1,6,0,5),(0,5,0,4),(0,4,1,3),(1,3,0,2),(0,2,0,1),(0,1,1,0)],
+        '9':[(4,3,0,3),(0,3,0,1),(0,1,1,0),(1,0,3,0),(3,0,4,1),(4,1,4,5),(4,5,3,6),(3,6,1,6),(1,6,0,5)],
+        '-':[(0,3,4,3)],
+        '_':[(0,6,4,6)],
+        '/':[(4,0,0,6)],
+        '.':[(1,5,1,6),(2,5,2,6)],
+        ':':[(1,1,2,1),(1,4,2,4)],
+        '+':[(2,1,2,5),(0,3,4,3)],
+        ' ':[], '#':[(1,0,1,6),(3,0,3,6),(0,2,4,2),(0,4,4,4)],
+    }
+    chars = text.upper()
+    char_w = 4 * scale
+    spacing = 1.2 * scale
+    total_w = len(chars) * (char_w + spacing) - spacing
+    start_x = cx - total_w/2
+    cmds = [f"D{apt}*"]
+    for ci, ch in enumerate(chars):
+        ox = start_x + ci * (char_w + spacing)
+        oy = cy - 3 * scale  # center vertically (char height = 6 units)
+        strokes = FONT.get(ch, [])
+        for x0,y0,x1,y1 in strokes:
+            ax = ox + x0*scale; ay = oy + y0*scale
+            bx2 = ox + x1*scale; by2 = oy + y1*scale
+            cmds.append(f"X{int(ax*1e6):+010d}Y{int(ay*1e6):+010d}D02*")
+            cmds.append(f"X{int(bx2*1e6):+010d}Y{int(by2*1e6):+010d}D01*")
+    return cmds
+
 # ================================================================
 # LOWER PCB  dia88mm  rev 1.3 layout
 # ================================================================
@@ -116,7 +186,7 @@ os.makedirs(LOWER_OUT, exist_ok=True)
 
 BX, BY = 100.0, 100.0   # board center
 OR = 44.0                # outer radius
-IR = 13.5                # center cutout radius (for joystick shaft)
+# NOTE: NO center cutout - joystick module mounts on PCB surface
 
 # ---- Key component centers ----
 # North = lower Y
@@ -138,9 +208,9 @@ mount_holes = [(BX + MH_R*math.cos(math.radians(a)),
                 BY + MH_R*math.sin(math.radians(a))) for a in MH_ANGLES]
 
 # ================================================================
-#  Edge.Cuts
+#  Edge.Cuts  — circular board only, NO center hole
 # ================================================================
-edge = outline(BX, BY, OR, apt=10) + outline(BX, BY, IR, apt=10)
+edge = outline(BX, BY, OR, apt=10)
 write_gerber(f"{LOWER_OUT}/lower_pcb-Edge_Cuts.gbr", [("Edge_Cuts", edge)])
 
 # ================================================================
@@ -308,122 +378,123 @@ write_gerber(f"{LOWER_OUT}/lower_pcb-F_Mask.gbr", [("F.Mask", fcu)])
 write_gerber(f"{LOWER_OUT}/lower_pcb-B_Mask.gbr", [("B.Mask", bcu)])
 
 # ================================================================
-#  F.SilkS — component outlines + connection labels
+#  F.SilkS — component outlines + ref designators + net labels
 # ================================================================
 silk = []
 # Aperture for silkscreen lines (0.15mm)
 silk.append("%ADD10C,0.15*%")
+silk.append("%ADD12C,0.12*%")  # thinner for small text
 
-# U1 XIAO outline + label
+# ---- U1 XIAO ESP32-S3 ----
 silk += silk_box(XIAO_X, XIAO_Y, 17.5, 21.0)
 silk += silk_cross(XIAO_X, XIAO_Y)
-# Label: U1 XIAO ESP32-S3
-silk += silk_line(XIAO_X-8, XIAO_Y-12, XIAO_X+8, XIAO_Y-12)   # top edge annotation line
-# Pin labels along left side (GPIO assignments)
-gpio_labels = [
-    (XIAO_X-8.75, XIAO_Y-9,  "3V3"),
-    (XIAO_X-8.75, XIAO_Y-6,  "GND"),
-    (XIAO_X-8.75, XIAO_Y-3,  "G1-JOY_X"),
-    (XIAO_X-8.75, XIAO_Y+0,  "G2-JOY_Y"),
-    (XIAO_X-8.75, XIAO_Y+3,  "G3-JOY_SW"),
-    (XIAO_X-8.75, XIAO_Y+6,  "G4-VBAT"),
-    (XIAO_X-8.75, XIAO_Y+9,  "GND"),
-]
-gpio_labels_r = [
-    (XIAO_X+8.75, XIAO_Y-9,  "G5-BTN_L"),
-    (XIAO_X+8.75, XIAO_Y-6,  "G6-BTN_R"),
-    (XIAO_X+8.75, XIAO_Y-3,  "G7-BTN_BK"),
-    (XIAO_X+8.75, XIAO_Y+0,  "G8-BTN_FW"),
-    (XIAO_X+8.75, XIAO_Y+3,  "G9-BT_SYNC"),
-    (XIAO_X+8.75, XIAO_Y+6,  "3V3"),
-    (XIAO_X+8.75, XIAO_Y+9,  "GND"),
-]
-# Tick marks at each pad position for left and right sides
-for px,py,lbl in gpio_labels + gpio_labels_r:
-    silk += silk_line(px-0.5, py, px+0.5, py)
+silk += silk_label(XIAO_X, XIAO_Y-13, "U1", scale=0.55)
+silk += silk_label(XIAO_X, XIAO_Y-11, "XIAO ESP32-S3", scale=0.40)
+# GPIO tick marks + net labels (left side, north=top)
+for i,(net) in enumerate(["3V3","GND","G1-JOY-X","G2-JOY-Y","G3-JOY-SW","G4-VBAT","GND"]):
+    py = XIAO_Y - 9.0 + i*3.0
+    silk += silk_line(XIAO_X-8.75, py, XIAO_X-9.5, py)
+    silk += silk_label(XIAO_X-13, py, net, scale=0.28)
+# Right side GPIO labels
+for i,(net) in enumerate(["G5-BTN-L","G6-BTN-R","G7-BTN-BK","G8-BTN-FW","G9-BT-SYNC","3V3","GND"]):
+    py = XIAO_Y - 9.0 + i*3.0
+    silk += silk_line(XIAO_X+8.75, py, XIAO_X+9.5, py)
+    silk += silk_label(XIAO_X+14, py, net, scale=0.28)
 
-# J1 USB-C outline
+# ---- J1 USB-C ----
 silk += silk_box(USBC_X, USBC_Y, 9.0, 3.5)
-# Arrow pointing north (forward)
-silk += silk_line(USBC_X, USBC_Y-3, USBC_X, USBC_Y-5)
-silk += silk_line(USBC_X-1, USBC_Y-4, USBC_X, USBC_Y-5)
-silk += silk_line(USBC_X+1, USBC_Y-4, USBC_X, USBC_Y-5)
-# Label: J1 USB-C CHRG
-silk += silk_line(USBC_X-4, USBC_Y+3, USBC_X+4, USBC_Y+3)
+silk += silk_label(USBC_X, USBC_Y+3.5, "J1 USB-C CHRG+DATA", scale=0.35)
+silk += silk_label(USBC_X-5, USBC_Y, "FORWARD", scale=0.28)
+# Forward arrow
+silk += silk_line(USBC_X, USBC_Y-2.5, USBC_X, USBC_Y-4.5)
+silk += silk_line(USBC_X-0.8, USBC_Y-3.8, USBC_X, USBC_Y-4.5)
+silk += silk_line(USBC_X+0.8, USBC_Y-3.8, USBC_X, USBC_Y-4.5)
+silk += silk_label(USBC_X, USBC_Y-5.5, "N", scale=0.4)
 
-# J4 Joystick outline (25x25mm module)
+# ---- J4 Joystick (center) ----
 silk += silk_box(JOY_X, JOY_Y, 25.0, 25.0)
 silk += silk_cross(JOY_X, JOY_Y, 3.0)
-# Pin labels: VCC GND X Y SW (south edge header)
-for i,(lbl) in enumerate(["3V3","GND","JOY_X","JOY_Y","JOY_SW"]):
+silk += silk_label(JOY_X, JOY_Y-9, "J4 JOYSTICK", scale=0.45)
+silk += silk_label(JOY_X, JOY_Y-7, "KY-023 CENTER", scale=0.35)
+# Header pin labels south side
+for i,net in enumerate(["3V3","GND","JOY-X","JOY-Y","JOY-SW"]):
     px = JOY_X - 5.08 + i*2.54
-    silk += silk_line(px, JOY_Y+12.5, px, JOY_Y+14.5)
-# Label: J4 JOYSTICK
-silk += silk_line(JOY_X-8, JOY_Y-14, JOY_X+8, JOY_Y-14)
+    silk += silk_line(px, JOY_Y+12.5, px, JOY_Y+14.0)
+    silk += silk_label(px, JOY_Y+15.0, net, scale=0.25)
 
-# J3 FPC outline (6-pin, ~4.5mm wide x 3.5mm tall)
-silk += silk_box(FPC_X, FPC_Y, 5.0, 3.5)
-silk += silk_pin1(FPC_X-2.5, FPC_Y-1.0)  # Pin 1 marker
-# Pin labels
-for i,(lbl) in enumerate(["3V3","GND","BTN_L","BTN_R","BTN_BK","BTN_FW"]):
+# ---- J3 FPC ----
+silk += silk_box(FPC_X, FPC_Y, 5.5, 3.5)
+silk += silk_pin1(FPC_X-2.75, FPC_Y-1.0)
+silk += silk_label(FPC_X, FPC_Y+3.5, "J3 FPC-6P", scale=0.38)
+silk += silk_label(FPC_X, FPC_Y+5.0, "TO UPPER PCB", scale=0.32)
+# FPC pin net labels
+for i,net in enumerate(["3V3","GND","BTN-L","BTN-R","BCK","FWD"]):
     px = FPC_X - 1.25 + i*0.5
-    silk += silk_line(px, FPC_Y+2, px, FPC_Y+3)
-# Label: J3 FPC-6P TO_UPPER_PCB
-silk += silk_line(FPC_X-3, FPC_Y+4, FPC_X+3, FPC_Y+4)
+    silk += silk_line(px, FPC_Y+2.0, px, FPC_Y+2.8)
+    silk += silk_label(px, FPC_Y+3.0, str(i+1), scale=0.22)
 
-# U2 TP4056 outline
+# ---- U2 TP4056 ----
 silk += silk_box(TP_X, TP_Y, 5.0, 6.5)
 silk += silk_pin1(TP_X-2.5, TP_Y-3.25)
-# Labels: VIN BAT GND on nearby
-silk += silk_line(TP_X-3, TP_Y-4, TP_X+3, TP_Y-4)
+silk += silk_label(TP_X, TP_Y-5.5, "U2 TP4056", scale=0.38)
+silk += silk_label(TP_X, TP_Y-4.0, "LIPO CHARGER", scale=0.30)
+silk += silk_label(TP_X-3.5, TP_Y-2.5, "VIN", scale=0.28)
+silk += silk_label(TP_X+3.5, TP_Y-2.5, "BAT+", scale=0.28)
 
-# U3 LDO outline
-silk += silk_box(LDO_X, LDO_Y, 3.0, 3.0)
-silk += silk_pin1(LDO_X-1.5, LDO_Y-1.5)
-silk += silk_line(LDO_X-2, LDO_Y-2.5, LDO_X+2, LDO_Y-2.5)
+# ---- U3 LDO AP2112K ----
+silk += silk_box(LDO_X, LDO_Y, 3.5, 3.5)
+silk += silk_pin1(LDO_X-1.75, LDO_Y-1.75)
+silk += silk_label(LDO_X, LDO_Y-3.5, "U3 LDO", scale=0.35)
+silk += silk_label(LDO_X, LDO_Y-2.2, "3V3 REG", scale=0.28)
 
-# U4 ESD outline
-silk += silk_box(ESD_X, ESD_Y, 3.0, 3.5)
-silk += silk_pin1(ESD_X-1.5, ESD_Y-1.75)
-silk += silk_line(ESD_X-2, ESD_Y-2.5, ESD_X+2, ESD_Y-2.5)
+# ---- U4 ESD USBLC6 ----
+silk += silk_box(ESD_X, ESD_Y, 3.5, 4.0)
+silk += silk_pin1(ESD_X-1.75, ESD_Y-2.0)
+silk += silk_label(ESD_X, ESD_Y-4.0, "U4 ESD", scale=0.35)
+silk += silk_label(ESD_X, ESD_Y-2.7, "USB PROT", scale=0.28)
 
-# J2 battery connector outline
+# ---- J2 Battery connector ----
 silk += silk_box(BAT_X, BAT_Y, 9.0, 6.0)
 silk += silk_pin1(BAT_X-4.5, BAT_Y-3.0)
-# +/- labels
-silk += silk_line(BAT_X-1.5, BAT_Y, BAT_X-1.5, BAT_Y-4)  # BAT+
-silk += silk_line(BAT_X+1.5, BAT_Y, BAT_X+1.5, BAT_Y-4)  # GND
-silk += silk_line(BAT_X-4.5, BAT_Y+3, BAT_X+4.5, BAT_Y+3)
+silk += silk_label(BAT_X, BAT_Y-5.0, "J2 BAT+ LIPO", scale=0.35)
+silk += silk_label(BAT_X-2.0, BAT_Y, "+", scale=0.45)   # BAT+ side
+silk += silk_label(BAT_X+2.0, BAT_Y, "-", scale=0.45)   # GND side
 
-# SW1 power switch outline
-silk += silk_box(SW1_X+2, SW1_Y, 8.0, 5.5)
-silk += silk_line(SW1_X+3, SW1_Y-4, SW1_X+8, SW1_Y-4)
+# ---- SW1 Power switch ----
+silk += silk_box(SW1_X+2.0, SW1_Y, 8.0, 5.5)
+silk += silk_label(SW1_X+2.0, SW1_Y-5.0, "SW1 PWR", scale=0.35)
+silk += silk_label(SW1_X+2.0, SW1_Y-3.5, "ON-OFF", scale=0.30)
 
-# SW_BT Bluetooth sync outline + label
+# ---- SW_BT Bluetooth sync ----
 silk += silk_box(SWBT_X, SWBT_Y, 5.0, 4.0)
-silk += silk_line(SWBT_X-3, SWBT_Y+3, SWBT_X+3, SWBT_Y+3)
+silk += silk_label(SWBT_X, SWBT_Y+4.5, "SW-BT SYNC", scale=0.35)
+silk += silk_label(SWBT_X, SWBT_Y+3.0, "GPIO9", scale=0.28)
 
-# SW2/SW3 BOOT/RESET
-silk += silk_box(XIAO_X+12, XIAO_Y-4, 4.0, 3.5)
-silk += silk_box(XIAO_X+12, XIAO_Y+4, 4.0, 3.5)
+# ---- SW2 BOOT / SW3 RESET ----
+silk += silk_box(XIAO_X+12, XIAO_Y-4, 4.5, 3.5)
+silk += silk_label(XIAO_X+12, XIAO_Y-7.5, "SW2", scale=0.35)
+silk += silk_label(XIAO_X+12, XIAO_Y-6.2, "BOOT", scale=0.28)
+silk += silk_box(XIAO_X+12, XIAO_Y+4, 4.5, 3.5)
+silk += silk_label(XIAO_X+12, XIAO_Y+6.5, "SW3", scale=0.35)
+silk += silk_label(XIAO_X+12, XIAO_Y+7.8, "RESET", scale=0.28)
 
-# Mounting hole circles
-silk.append("%ADD10C,0.15*%")
+# ---- LED1/LED2 ----
+silk += silk_label(TP_X+7, TP_Y-3.5, "LED1 RED CHG", scale=0.28)
+silk += silk_label(TP_X+7, TP_Y+0.5, "LED2 GRN FULL", scale=0.28)
+
+# ---- Mounting holes ----
 for hx,hy in mount_holes:
     silk += outline(hx, hy, 2.5, n=36, apt=10, apt_size=0.15)
+    silk += silk_label(hx, hy+3.5, "M2", scale=0.28)
 
-# North/South/East/West orientation arrows at edge
-# North arrow (top)
+# ---- Board orientation ----
+# North arrow at edge
 silk += silk_line(BX, BY-37, BX, BY-41)
-silk += silk_line(BX-1, BY-40, BX, BY-42)
-silk += silk_line(BX+1, BY-40, BX, BY-42)
-# Label lines for board edge features
-# USB-C at north
-silk += silk_line(BX-5, BY-43.5, BX+5, BY-43.5)
-# SW1 at west
-silk += silk_line(BX-43, BY-2, BX-43, BY+2)
-# SW_BT at south
-silk += silk_line(BX-3, BY+41.5, BX+3, BY+41.5)
+silk += silk_line(BX-0.8, BY-40.2, BX, BY-41.5)
+silk += silk_line(BX+0.8, BY-40.2, BX, BY-41.5)
+silk += silk_label(BX, BY-43, "FWD", scale=0.35)
+# Board title center bottom
+silk += silk_label(BX, BY+38, "DAPAO LOWER PCB R1.3", scale=0.35)
 
 write_gerber(f"{LOWER_OUT}/lower_pcb-F_SilkS.gbr", [("F.SilkS", silk)])
 
@@ -447,11 +518,11 @@ for i in range(5):
 # J2 JST-PH through-hole
 lower_holes += [(BAT_X-1, BAT_Y, 0.8, True), (BAT_X+1, BAT_Y, 0.8, True)]
 
-# Center cutout NPTH 27mm
-lower_holes.append((BX, BY, 27.0, False))
+# No center NPTH — joystick module sits on PCB surface
 
 write_drill(f"{LOWER_OUT}/lower_pcb-PTH.drl",  [(x,y,d,p) for x,y,d,p in lower_holes if p])
-write_drill(f"{LOWER_OUT}/lower_pcb-NPTH.drl", [(x,y,d,p) for x,y,d,p in lower_holes if not p])
+# NPTH file still written but empty (JLCPCB requires it)
+write_drill(f"{LOWER_OUT}/lower_pcb-NPTH.drl", [])
 
 print(f"Lower PCB gerbers -> {LOWER_OUT}/")
 for f in sorted(os.listdir(LOWER_OUT)):
@@ -528,31 +599,67 @@ write_gerber(f"{UPPER_OUT}/upper_pcb-B_Mask.gbr", [("B.Mask", outline(UBX,UBY,UR
 # Upper silk
 silk2 = []
 silk2.append("%ADD10C,0.15*%")
-silk2 += silk_box(sw4x, sw4y, 14.0, 14.0)   # SW4 GM8.0 body
-silk2 += silk_box(sw5x, sw5y, 14.0, 14.0)   # SW5 GM8.0 body
-silk2 += silk_cross(sw4x, sw4y); silk2 += silk_cross(sw5x, sw5y)
-silk2 += silk_box(sw6x, sw6y, 9.0, 9.0)     # SW6 Blue Dot
-silk2 += silk_box(sw7x, sw7y, 9.0, 9.0)     # SW7 Blue Dot
-silk2 += silk_pin1(sw4x-3.81, sw4y)          # pin1 NC marker SW4
-silk2 += silk_pin1(sw5x-3.81, sw5y)          # pin1 NC marker SW5
-# FPC outline + pin1
-silk2 += silk_box(fpc2_x, fpc2_y, 5.0, 3.5)
-silk2 += silk_pin1(fpc2_x-2.5, fpc2_y-1.0)
-# FPC pin labels (tick marks)
-for i in range(6):
+
+# SW4/SW5 GM 8.0 bodies (14x14mm Cherry MX footprint)
+for sx,sy,lbl,func in [(sw4x,sw4y,"SW4","L-CLICK"),(sw5x,sw5y,"SW5","R-CLICK")]:
+    silk2 += silk_box(sx, sy, 14.0, 14.0)
+    silk2 += silk_cross(sx, sy)
+    silk2 += silk_pin1(sx-3.81, sy)
+    silk2 += silk_label(sx, sy-9, lbl, scale=0.45)
+    silk2 += silk_label(sx, sy-7.5, "GM8.0", scale=0.35)
+    silk2 += silk_label(sx, sy-6.2, func, scale=0.30)
+    # Pin labels: NC / COM(GND) / NO(SIG)
+    silk2 += silk_label(sx-3.81, sy+8.5, "NC", scale=0.28)
+    silk2 += silk_label(sx,      sy+8.5, "COM-GND", scale=0.25)
+    silk2 += silk_label(sx+3.81, sy+8.5, "NO-SIG", scale=0.25)
+
+# SW6/SW7 Blue Dot bodies
+for sx,sy,lbl,func,arrow_dir in [
+    (sw6x, sw6y, "SW6", "BACK",    -1),
+    (sw7x, sw7y, "SW7", "FORWARD", +1)
+]:
+    silk2 += silk_box(sx, sy, 9.0, 9.0)
+    silk2 += silk_label(sx, sy-6, lbl, scale=0.42)
+    silk2 += silk_label(sx, sy-4.5, "BLUE DOT", scale=0.32)
+    silk2 += silk_label(sx, sy-3.0, func, scale=0.32)
+    # Plunger direction arrow
+    silk2 += silk_line(sx, sy, sx + arrow_dir*5, sy)
+    silk2 += silk_line(sx+arrow_dir*5, sy, sx+arrow_dir*4, sy-0.8)
+    silk2 += silk_line(sx+arrow_dir*5, sy, sx+arrow_dir*4, sy+0.8)
+    silk2 += silk_label(sx+arrow_dir*7, sy, "PLUNGER", scale=0.25)
+    # Pad labels
+    silk2 += silk_label(sx-2.5, sy+6, "GND", scale=0.28)
+    silk2 += silk_label(sx+2.5, sy+6, "SIG", scale=0.28)
+
+# J5 FPC
+silk2 += silk_box(fpc2_x, fpc2_y, 5.5, 3.5)
+silk2 += silk_pin1(fpc2_x-2.75, fpc2_y-1.0)
+silk2 += silk_label(fpc2_x, fpc2_y+3.5, "J5 FPC-6P", scale=0.38)
+silk2 += silk_label(fpc2_x, fpc2_y+5.0, "FROM LOWER PCB", scale=0.30)
+for i,net in enumerate(["3V3","GND","BTN-L","BTN-R","BCK","FWD"]):
     px2 = fpc2_x - 1.25 + i*0.5
-    silk2 += silk_line(px2, fpc2_y+2, px2, fpc2_y+3.5)
-# Mount holes
-for hx2,hy2 in [(UBX-15,UBY),(UBX+15,UBY)]:
+    silk2 += silk_line(px2, fpc2_y+2.0, px2, fpc2_y+2.8)
+    silk2 += silk_label(px2, fpc2_y+3.0, str(i+1), scale=0.22)
+
+# R1-R4 pull-up labels
+for lbl,px2,py2 in [
+    ("R1 10K",sw4x-1, sw4y+6), ("R2 10K",sw5x-1, sw5y+6),
+    ("R3 10K",sw6x+4, sw6y-3), ("R4 10K",sw7x-4, sw7y-3),
+    ("C1 100N",UBX, UBY+8),
+]:
+    silk2 += silk_label(px2, py2+1.5, lbl, scale=0.28)
+
+# H1/H2 mount holes
+for hx2,hy2,lbl in [(UBX-15,UBY,"H1"),(UBX+15,UBY,"H2")]:
     silk2 += outline(hx2, hy2, 2.5, n=36, apt=10, apt_size=0.15)
-# Orientation mark: north arrow
-silk2 += silk_line(UBX, UBY-20, UBX, UBY-24)
-silk2 += silk_line(UBX-1, UBY-23, UBX, UBY-25)
-silk2 += silk_line(UBX+1, UBY-23, UBX, UBY-25)
-# Pin labels near FPC
-for i,(lbl) in enumerate(["1:3V3","2:GND","3:BTN_L","4:BTN_R","5:BTN_BK","6:BTN_FW"]):
-    px2 = fpc2_x - 1.25 + i*0.5
-    silk2 += silk_line(px2-0.3, fpc2_y-1.5, px2+0.3, fpc2_y-1.5)
+    silk2 += silk_label(hx2, hy2+3.5, lbl+" M2", scale=0.28)
+
+# North arrow + board label
+silk2 += silk_line(UBX, UBY-20, UBX, UBY-23)
+silk2 += silk_line(UBX-0.8, UBY-22.3, UBX, UBY-23.5)
+silk2 += silk_line(UBX+0.8, UBY-22.3, UBX, UBY-23.5)
+silk2 += silk_label(UBX, UBY-25, "FWD", scale=0.35)
+silk2 += silk_label(UBX, UBY+22, "DAPAO UPPER PCB R1.3", scale=0.32)
 
 write_gerber(f"{UPPER_OUT}/upper_pcb-F_SilkS.gbr", [("F.SilkS", silk2)])
 
