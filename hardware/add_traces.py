@@ -34,7 +34,7 @@ def append_traces(pcb_path, traces):
     content = content.rstrip()
     if content.endswith(")"):
         content = content[:-1].rstrip()
-    content += "\n\n  ; ===== COPPER TRACES =====\n"
+    content += "\n\n# ===== COPPER TRACES =====\n"
     content += "\n".join(traces)
     content += "\n)\n"
     with open(pcb_path, "w") as f:

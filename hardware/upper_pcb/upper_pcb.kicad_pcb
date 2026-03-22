@@ -143,7 +143,7 @@
       (drill 2.2000) (layers "*.Cu" "*.Mask") (net 1 "GND"))
   )
 
-  ; ===== COPPER TRACES =====
+# ===== COPPER TRACES =====
   (via (at 98.7500 108.0000) (size 0.8000) (drill 0.4000) (layers "F.Cu" "B.Cu") (net 2))
   (segment (start 98.7500 108.0000) (end 98.7500 96.0000) (width 0.3500) (layer "F.Cu") (net 2))
   (segment (start 98.7500 96.0000) (end 122.0000 96.0000) (width 0.3500) (layer "F.Cu") (net 2))
