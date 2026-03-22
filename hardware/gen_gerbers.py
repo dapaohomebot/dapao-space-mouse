@@ -197,9 +197,9 @@ FPC_X,   FPC_Y   = BX,       BY + 17.0   # J3 FPC (100, 117) - between joystick 
 # U2 TP4056 REMOVED - XIAO handles charging internally
 # U4 USBLC6 REMOVED - XIAO handles USB ESD internally
 LDO_X,   LDO_Y   = BX + 18,  BY -  5.0   # U3 LDO    (118, 95) - powers peripherals
-BAT_X,   BAT_Y   = BX - 12,  BY + 38.0   # J2 Battery -- south edge, left of SW_BT
+BAT_X,   BAT_Y   = BX - 8,   BY + 15.0   # J2 Battery -- B.Cu (underside), SW quadrant
 SW1_X,   SW1_Y   = BX - 42,  BY          # SW1 Power west edge (58, 100)
-SWBT_X,  SWBT_Y  = BX + 12,  BY + 38.0   # SW_BT south edge, right of J2 battery
+SWBT_X,  SWBT_Y  = BX,       BY + 40.0   # SW_BT south edge
 
 # M2 mounting holes at 45/135/225/315 deg, R=36mm
 MH_R = 36.0
@@ -308,12 +308,7 @@ for dx in [-0.95, 0.95]:
 
 # U4 USBLC6 REMOVED
 
-# --- J2 JST-PH 2-pin battery (SW quadrant) ---
-apt = 39
-fcu.append(f"%ADD{apt}C,2.00*%")
-fcu.append(f"D{apt}*")
-for dx in [-1.0, 1.0]:
-    fcu.append(f"X{int((BAT_X+dx)*1e6):+010d}Y{int(BAT_Y*1e6):+010d}D03*")
+# J2 JST-PH battery -- placed on B.Cu (underside), added to bcu below
 
 # --- SW1 SPDT power switch (west board edge) ---
 apt = 40
@@ -363,17 +358,26 @@ fcu.append(f"%ADD{apt}R,2.00X1.25*%")
 fcu.append(f"D{apt}*")
 # C4: 10uF bulk 3V3, near U3
 fcu.append(f"X{int((LDO_X+5)*1e6):+010d}Y{int((LDO_Y+2)*1e6):+010d}D03*")
-# C5: 10uF bulk BAT+, near J2
-fcu.append(f"X{int((BAT_X+5)*1e6):+010d}Y{int((BAT_Y-3)*1e6):+010d}D03*")
+# C5: 10uF bulk BAT+, near J2 (on B.Cu since J2 is on bottom)
 # LEDs REMOVED (U2 TP4056 gone; XIAO has its own charge LED onboard)
 
 write_gerber(f"{LOWER_OUT}/lower_pcb-F_Cu.gbr", [("F.Cu", fcu)])
 
-# B.Cu — full ground plane
+# B.Cu — ground plane + J2 battery connector (bottom-mount)
 bcu = outline(BX, BY, OR-0.3, apt=10)
+# J2 JST-PH 2-pin on bottom of board (battery hangs below)
+bcu.append(f"%ADD60C,2.00*%")
+bcu.append(f"D60*")
+for dx in [-1.0, 1.0]:
+    bcu.append(f"X{int((BAT_X+dx)*1e6):+010d}Y{int(BAT_Y*1e6):+010d}D03*")
+# C5: 10uF bulk BAT+ on bottom near J2
+bcu.append(f"%ADD61R,2.00X1.25*%")
+bcu.append(f"D61*")
+bcu.append(f"X{int((BAT_X+4)*1e6):+010d}Y{int((BAT_Y-3)*1e6):+010d}D03*")
+
 write_gerber(f"{LOWER_OUT}/lower_pcb-B_Cu.gbr", [("B.Cu", bcu)])
 
-# Mask layers match copper
+# Mask layers
 write_gerber(f"{LOWER_OUT}/lower_pcb-F_Mask.gbr", [("F.Mask", fcu)])
 write_gerber(f"{LOWER_OUT}/lower_pcb-B_Mask.gbr", [("B.Mask", bcu)])
 
@@ -451,13 +455,7 @@ silk += silk_pin1(LDO_X-1.75, LDO_Y-1.75)
 silk += silk_label(LDO_X, LDO_Y-3.8, "U3", scale=0.50)
 silk += silk_label(LDO_X, LDO_Y-2.4, "LDO", scale=0.36)
 
-# ---- J2 Battery ----
-silk += silk_box(BAT_X, BAT_Y, 9.0, 6.0)
-silk += silk_pin1(BAT_X-4.5, BAT_Y-3.0)
-silk += silk_label(BAT_X, BAT_Y-5.5, "J2", scale=0.50)
-silk += silk_label(BAT_X, BAT_Y-3.8, "LIPO", scale=0.36)
-silk += silk_label(BAT_X-2.0, BAT_Y+0.5, "+", scale=0.40)
-silk += silk_label(BAT_X+2.0, BAT_Y+0.5, "-", scale=0.40)
+# J2 battery is on B.Cu (underside) -- silk goes on B.SilkS, not here
 
 # ---- SW1 Power ----
 silk += silk_box(SW1_X+2.0, SW1_Y, 8.0, 5.5)
@@ -487,9 +485,21 @@ silk += silk_line(BX, BY-37, BX, BY-41)
 silk += silk_line(BX-0.8, BY-40.2, BX, BY-41.5)
 silk += silk_line(BX+0.8, BY-40.2, BX, BY-41.5)
 silk += silk_label(BX, BY-43, "FWD", scale=0.36)
-silk += silk_label(BX, BY+35, "DAPAO LOWER R2.3", scale=0.36)
+silk += silk_label(BX, BY+35, "DAPAO LOWER R2.4", scale=0.36)
 
 write_gerber(f"{LOWER_OUT}/lower_pcb-F_SilkS.gbr", [("F.SilkS", silk)])
+
+# B.SilkS — labels for bottom-mounted components
+bsilk = []
+bsilk.append("%ADD10C,0.15*%")
+bsilk += silk_box(BAT_X, BAT_Y, 9.0, 6.0)
+bsilk += silk_pin1(BAT_X-4.5, BAT_Y-3.0)
+bsilk += silk_label(BAT_X, BAT_Y-5.5, "J2", scale=0.50)
+bsilk += silk_label(BAT_X, BAT_Y-3.8, "LIPO", scale=0.36)
+bsilk += silk_label(BAT_X-2.0, BAT_Y+0.5, "+", scale=0.40)
+bsilk += silk_label(BAT_X+2.0, BAT_Y+0.5, "-", scale=0.40)
+bsilk += silk_label(BAT_X, BAT_Y+5.5, "BOTTOM MOUNT", scale=0.28)
+write_gerber(f"{LOWER_OUT}/lower_pcb-B_SilkS.gbr", [("B.SilkS", bsilk)])
 
 # ================================================================
 #  Drill file
@@ -514,8 +524,8 @@ for py in [-5.0, 5.0]:
 for mx,my in [(-7.7,-8.8),(7.7,-8.8),(-7.7,8.8),(7.7,8.8)]:
     lower_holes.append((JOY_X+mx, JOY_Y+my, 1.5, True))
 
-# J2 JST-PH through-hole
-lower_holes += [(BAT_X-1, BAT_Y, 0.8, True), (BAT_X+1, BAT_Y, 0.8, True)]
+# J2 JST-PH through-hole (bottom mount, drilled through from B.Cu)
+lower_holes += [(BAT_X-1.0, BAT_Y, 1.0, True), (BAT_X+1.0, BAT_Y, 1.0, True)]
 
 # No center NPTH — joystick module sits on PCB surface
 
@@ -541,7 +551,7 @@ sw4x, sw4y = UBX - 10.0, UBY - 12.0
 sw5x, sw5y = UBX + 10.0, UBY - 12.0
 sw6x, sw6y = UBX - 22.0, UBY
 sw7x, sw7y = UBX + 22.0, UBY
-fpc2_x, fpc2_y = UBX, UBY + 22.0   # South edge of upper PCB (dia54mm, R=27mm)
+fpc2_x, fpc2_y = UBX, UBY + 8.0    # J5 FPC on B.Cu (underside), center-south area
 
 edge2 = outline(UBX, UBY, UR, apt=10)
 write_gerber(f"{UPPER_OUT}/upper_pcb-Edge_Cuts.gbr", [("Edge_Cuts", edge2)])
@@ -570,12 +580,7 @@ for sx,sy in [(sw6x,sw6y),(sw7x,sw7y)]:
     fcu2.append(f"X{int((sx-2.5)*1e6):+010d}Y{int(sy*1e6):+010d}D03*")   # GND
     fcu2.append(f"X{int((sx+2.5)*1e6):+010d}Y{int(sy*1e6):+010d}D03*")   # SIG
 
-# J5 FPC 6-pin 0.5mm
-apt = 32
-fcu2.append(f"%ADD{apt}R,0.40X1.20*%")
-fcu2.append(f"D{apt}*")
-for i in range(6):
-    fcu2.append(f"X{int((fpc2_x-1.25+i*0.5)*1e6):+010d}Y{int(fpc2_y*1e6):+010d}D03*")
+# J5 FPC -- on B.Cu (bottom of upper PCB), added to bcu2 below
 
 # R1-R4 pull-ups + C1
 apt = 40
@@ -591,9 +596,22 @@ for px,py in [
     fcu2.append(f"X{int(px*1e6):+010d}Y{int(py*1e6):+010d}D03*")
 
 write_gerber(f"{UPPER_OUT}/upper_pcb-F_Cu.gbr", [("F.Cu", fcu2)])
-write_gerber(f"{UPPER_OUT}/upper_pcb-B_Cu.gbr", [("B.Cu", outline(UBX,UBY,UR-0.3,apt=10))])
+
+# B.Cu — ground plane + J5 FPC on bottom of upper PCB
+bcu2 = outline(UBX, UBY, UR-0.3, apt=10)
+bcu2.append(f"%ADD60R,0.40X1.20*%")
+bcu2.append(f"D60*")
+for i in range(6):
+    bcu2.append(f"X{int((fpc2_x-1.25+i*0.5)*1e6):+010d}Y{int(fpc2_y*1e6):+010d}D03*")
+# FPC latch pads
+bcu2.append(f"%ADD61R,1.20X1.80*%")
+bcu2.append(f"D61*")
+for dx in [-2.5, 2.5]:
+    bcu2.append(f"X{int((fpc2_x+dx)*1e6):+010d}Y{int((fpc2_y+0.8)*1e6):+010d}D03*")
+
+write_gerber(f"{UPPER_OUT}/upper_pcb-B_Cu.gbr", [("B.Cu", bcu2)])
 write_gerber(f"{UPPER_OUT}/upper_pcb-F_Mask.gbr", [("F.Mask", fcu2)])
-write_gerber(f"{UPPER_OUT}/upper_pcb-B_Mask.gbr", [("B.Mask", outline(UBX,UBY,UR-0.3,apt=10))])
+write_gerber(f"{UPPER_OUT}/upper_pcb-B_Mask.gbr", [("B.Mask", bcu2)])
 
 # Upper silk
 silk2 = []
@@ -630,15 +648,7 @@ for sx,sy,lbl,func,arrow_dir in [
     silk2 += silk_label(sx-2.5, sy+5.8, "GND", scale=0.22)
     silk2 += silk_label(sx+2.5, sy+5.8, "SIG", scale=0.22)
 
-# J5 FPC
-silk2 += silk_box(fpc2_x, fpc2_y, 5.5, 3.5)
-silk2 += silk_pin1(fpc2_x-2.75, fpc2_y-1.0)
-silk2 += silk_label(fpc2_x, fpc2_y+3.0, "J5", scale=0.50)
-silk2 += silk_label(fpc2_x, fpc2_y+4.5, "FPC-DN", scale=0.36)
-# Pin numbers only at 0.5mm pitch
-for i in range(6):
-    px2 = fpc2_x - 1.25 + i*0.5
-    silk2 += silk_label(px2, fpc2_y+2.0, str(i+1), scale=0.20)
+# J5 FPC is on B.Cu (underside) -- label goes on B.SilkS only
 
 # R1-R4 + C1 — compact ref only
 for ref,px2,py2 in [
@@ -658,9 +668,22 @@ silk2 += silk_line(UBX, UBY-20, UBX, UBY-23)
 silk2 += silk_line(UBX-0.8, UBY-22.3, UBX, UBY-23.5)
 silk2 += silk_line(UBX+0.8, UBY-22.3, UBX, UBY-23.5)
 silk2 += silk_label(UBX, UBY-25, "FWD", scale=0.36)
-silk2 += silk_label(UBX, UBY+10, "DAPAO UPPER R1.5", scale=0.36)
+silk2 += silk_label(UBX, UBY+18, "DAPAO UPPER R1.6", scale=0.36)
 
 write_gerber(f"{UPPER_OUT}/upper_pcb-F_SilkS.gbr", [("F.SilkS", silk2)])
+
+# B.SilkS — J5 FPC label on underside
+bsilk2 = []
+bsilk2.append("%ADD10C,0.15*%")
+bsilk2 += silk_box(fpc2_x, fpc2_y, 5.5, 3.5)
+bsilk2 += silk_pin1(fpc2_x-2.75, fpc2_y-1.0)
+bsilk2 += silk_label(fpc2_x, fpc2_y+3.0, "J5", scale=0.50)
+bsilk2 += silk_label(fpc2_x, fpc2_y+4.5, "FPC-DN", scale=0.36)
+for i in range(6):
+    px2 = fpc2_x - 1.25 + i*0.5
+    bsilk2 += silk_label(px2, fpc2_y+2.0, str(i+1), scale=0.20)
+bsilk2 += silk_label(fpc2_x, fpc2_y-3.5, "BOTTOM MOUNT", scale=0.28)
+write_gerber(f"{UPPER_OUT}/upper_pcb-B_SilkS.gbr", [("B.SilkS", bsilk2)])
 
 # Upper drill
 upper_holes = [(UBX-15, UBY, 2.2, True), (UBX+15, UBY, 2.2, True)]
