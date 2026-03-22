@@ -193,13 +193,13 @@ OR = 44.0                # outer radius
 XIAO_X,  XIAO_Y  = BX,       BY - 30.0   # U1 XIAO center (100, 70)
 USBC_X,  USBC_Y  = BX,       BY - 43.0   # J1 USB-C at north edge (100, 57)
 JOY_X,   JOY_Y   = BX,       BY          # J4 Joystick at center (100, 100)
-FPC_X,   FPC_Y   = BX,       BY + 20.0   # J3 FPC (100, 120)
+FPC_X,   FPC_Y   = BX,       BY + 17.0   # J3 FPC (100, 117) - between joystick and battery row
 # U2 TP4056 REMOVED - XIAO handles charging internally
 # U4 USBLC6 REMOVED - XIAO handles USB ESD internally
 LDO_X,   LDO_Y   = BX + 18,  BY -  5.0   # U3 LDO    (118, 95) - powers peripherals
-BAT_X,   BAT_Y   = BX - 18,  BY + 15.0   # J2 Battery (82, 115)
+BAT_X,   BAT_Y   = BX - 12,  BY + 38.0   # J2 Battery -- south edge, left of SW_BT
 SW1_X,   SW1_Y   = BX - 42,  BY          # SW1 Power west edge (58, 100)
-SWBT_X,  SWBT_Y  = BX,       BY + 40.0   # SW_BT south edge (100, 140)
+SWBT_X,  SWBT_Y  = BX + 12,  BY + 38.0   # SW_BT south edge, right of J2 battery
 
 # M2 mounting holes at 45/135/225/315 deg, R=36mm
 MH_R = 36.0
@@ -487,7 +487,7 @@ silk += silk_line(BX, BY-37, BX, BY-41)
 silk += silk_line(BX-0.8, BY-40.2, BX, BY-41.5)
 silk += silk_line(BX+0.8, BY-40.2, BX, BY-41.5)
 silk += silk_label(BX, BY-43, "FWD", scale=0.36)
-silk += silk_label(BX, BY+38, "DAPAO LOWER R2.1", scale=0.36)
+silk += silk_label(BX, BY+35, "DAPAO LOWER R2.3", scale=0.36)
 
 write_gerber(f"{LOWER_OUT}/lower_pcb-F_SilkS.gbr", [("F.SilkS", silk)])
 
@@ -541,7 +541,7 @@ sw4x, sw4y = UBX - 10.0, UBY - 12.0
 sw5x, sw5y = UBX + 10.0, UBY - 12.0
 sw6x, sw6y = UBX - 22.0, UBY
 sw7x, sw7y = UBX + 22.0, UBY
-fpc2_x, fpc2_y = UBX, UBY + 15.0
+fpc2_x, fpc2_y = UBX, UBY + 22.0   # South edge of upper PCB (dia54mm, R=27mm)
 
 edge2 = outline(UBX, UBY, UR, apt=10)
 write_gerber(f"{UPPER_OUT}/upper_pcb-Edge_Cuts.gbr", [("Edge_Cuts", edge2)])
@@ -658,7 +658,7 @@ silk2 += silk_line(UBX, UBY-20, UBX, UBY-23)
 silk2 += silk_line(UBX-0.8, UBY-22.3, UBX, UBY-23.5)
 silk2 += silk_line(UBX+0.8, UBY-22.3, UBX, UBY-23.5)
 silk2 += silk_label(UBX, UBY-25, "FWD", scale=0.36)
-silk2 += silk_label(UBX, UBY+22, "DAPAO UPPER R1.3", scale=0.36)
+silk2 += silk_label(UBX, UBY+10, "DAPAO UPPER R1.5", scale=0.36)
 
 write_gerber(f"{UPPER_OUT}/upper_pcb-F_SilkS.gbr", [("F.SilkS", silk2)])
 
