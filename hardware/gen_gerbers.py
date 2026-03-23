@@ -575,13 +575,16 @@ for sx,sy in [(sw4x,sw4y),(sw5x,sw5y)]:
     fcu2.append(f"X{int(sx*1e6):+010d}Y{int(sy*1e6):+010d}D03*")           # COM -> GND
     fcu2.append(f"X{int((sx+5.08)*1e6):+010d}Y{int(sy*1e6):+010d}D03*")   # NC -> float/GND
 
-# SW6/SW7 Kailh Blue Dot SMD (2-pad 1.8x2.8mm, 5mm pitch)
+# SW6/SW7 Alps SKHLLBA010 (side-push snap-in THT, 4 holes 6.5x6.5mm square)
+# Pad annular rings on F.Cu (drill goes through)
 apt = 31
-fcu2.append(f"%ADD{apt}R,1.80X2.80*%")
+fcu2.append(f"%ADD{apt}C,1.80*%")
 fcu2.append(f"D{apt}*")
 for sx,sy in [(sw6x,sw6y),(sw7x,sw7y)]:
-    fcu2.append(f"X{int((sx-2.5)*1e6):+010d}Y{int(sy*1e6):+010d}D03*")   # GND
-    fcu2.append(f"X{int((sx+2.5)*1e6):+010d}Y{int(sy*1e6):+010d}D03*")   # SIG
+    fcu2.append(f"X{int((sx-3.25)*1e6):+010d}Y{int((sy-3.25)*1e6):+010d}D03*")  # sig
+    fcu2.append(f"X{int((sx+3.25)*1e6):+010d}Y{int((sy-3.25)*1e6):+010d}D03*")  # GND
+    fcu2.append(f"X{int((sx-3.25)*1e6):+010d}Y{int((sy+3.25)*1e6):+010d}D03*")  # snap
+    fcu2.append(f"X{int((sx+3.25)*1e6):+010d}Y{int((sy+3.25)*1e6):+010d}D03*")  # snap
 
 # J5 FPC -- on B.Cu (bottom of upper PCB), added to bcu2 below
 
@@ -592,8 +595,8 @@ fcu2.append(f"D{apt}*")
 for px,py in [
     (sw4x-1, sw4y+6),(sw4x+1, sw4y+6),
     (sw5x-1, sw5y+6),(sw5x+1, sw5y+6),
-    (sw6x+3, sw6y-3),(sw6x+5, sw6y-3),
-    (sw7x-5, sw7y-3),(sw7x-3, sw7y-3),
+    (sw6x+4, sw6y-6),(sw6x+6, sw6y-6),   # R3 near SW6 (SKHLLBA010)
+    (sw7x-6, sw7y-6),(sw7x-4, sw7y-6),   # R4 near SW7 (SKHLLBA010)
     (UBX-1,  UBY+8), (UBX+1,  UBY+8),
 ]:
     fcu2.append(f"X{int(px*1e6):+010d}Y{int(py*1e6):+010d}D03*")
@@ -637,28 +640,32 @@ for sx,sy,lbl,func in [(sw4x,sw4y,"SW4","L-CLK"),(sw5x,sw5y,"SW5","R-CLK")]:
     silk2 += silk_label(sx+5.08, sy+4.0, "NC", scale=0.22)
     silk2 += silk_label(sx+3.81, sy+8.2, "SIG", scale=0.22)
 
-# SW6/SW7 Blue Dot SMD
+# SW6/SW7 Alps SKHLLBA010 (side-push THT, 7.3x7.22mm body, 4 holes)
 for sx,sy,lbl,func,arrow_dir in [
     (sw6x, sw6y, "SW6", "BACK",  -1),
     (sw7x, sw7y, "SW7", "FWD",   +1)
 ]:
-    silk2 += silk_box(sx, sy, 9.0, 9.0)
-    silk2 += silk_label(sx, sy-6.2, lbl, scale=0.50)
-    silk2 += silk_label(sx, sy-4.6, func, scale=0.36)
-    # Plunger arrow (short)
-    silk2 += silk_line(sx, sy, sx + arrow_dir*4, sy)
-    silk2 += silk_line(sx+arrow_dir*4, sy, sx+arrow_dir*3, sy-0.6)
-    silk2 += silk_line(sx+arrow_dir*4, sy, sx+arrow_dir*3, sy+0.6)
-    # Pad net labels
-    silk2 += silk_label(sx-2.5, sy+5.8, "GND", scale=0.22)
-    silk2 += silk_label(sx+2.5, sy+5.8, "SIG", scale=0.22)
+    # Body outline 7.3x7.22mm
+    silk2 += silk_box(sx, sy, 7.3, 7.22)
+    silk2 += silk_label(sx, sy-5.5, lbl, scale=0.50)
+    silk2 += silk_label(sx, sy-4.0, "SKHLLBA010", scale=0.36)
+    silk2 += silk_label(sx, sy-2.8, func, scale=0.36)
+    # Side-push direction arrow
+    silk2 += silk_line(sx, sy, sx + arrow_dir*4.5, sy)
+    silk2 += silk_line(sx+arrow_dir*4.5, sy, sx+arrow_dir*3.5, sy-0.6)
+    silk2 += silk_line(sx+arrow_dir*4.5, sy, sx+arrow_dir*3.5, sy+0.6)
+    # Pin 1 marker (signal pin top-left)
+    silk2 += silk_pin1(sx-3.25, sy-3.25)
+    # Hole labels
+    silk2 += silk_label(sx-3.25, sy-3.25+5.5, "SIG", scale=0.22)
+    silk2 += silk_label(sx+3.25, sy-3.25+5.5, "GND", scale=0.22)
 
 # J5 FPC is on B.Cu (underside) -- label goes on B.SilkS only
 
 # R1-R4 + C1 — compact ref only
 for ref,px2,py2 in [
     ("R1", sw4x-1, sw4y+6.5), ("R2", sw5x-1, sw5y+6.5),
-    ("R3", sw6x+4, sw6y-3.5), ("R4", sw7x-4, sw7y-3.5),
+    ("R3", sw6x+5, sw6y-7.5), ("R4", sw7x-5, sw7y-7.5),
     ("C1", UBX,    UBY+8.5),
 ]:
     silk2 += silk_label(px2, py2, ref, scale=0.28)
@@ -692,8 +699,15 @@ write_gerber(f"{UPPER_OUT}/upper_pcb-B_SilkS.gbr", [("B.SilkS", bsilk2)])
 
 # Upper drill
 upper_holes = [(UBX-15, UBY, 2.2, True), (UBX+15, UBY, 2.2, True)]
+# SW4/SW5 GM8.0: 3 holes horizontal 5.08mm pitch
 for sx,sy in [(sw4x,sw4y),(sw5x,sw5y)]:
     upper_holes += [(sx-5.08, sy, 1.0, True), (sx, sy, 1.0, True), (sx+5.08, sy, 1.0, True)]
+# SW6/SW7 SKHLLBA010: 4 holes in 6.5x6.5mm square
+for sx,sy in [(sw6x,sw6y),(sw7x,sw7y)]:
+    upper_holes += [
+        (sx-3.25, sy-3.25, 1.0, True), (sx+3.25, sy-3.25, 1.0, True),
+        (sx-3.25, sy+3.25, 1.0, True), (sx+3.25, sy+3.25, 1.0, True),
+    ]
 
 write_drill(f"{UPPER_OUT}/upper_pcb-PTH.drl", upper_holes)
 

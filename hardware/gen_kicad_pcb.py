@@ -302,16 +302,26 @@ def gm8_fp(ref, x, y, btn_net):
 footprints_upper.append(gm8_fp("SW4", sw4x, sw4y, "BTN_L"))
 footprints_upper.append(gm8_fp("SW5", sw5x, sw5y, "BTN_R"))
 
-# --- SW6/SW7 Kailh Blue Dot SMD ---
-def bluedot_fp(ref, x, y, btn_net):
+# --- SW6/SW7 Alps SKHLLBA010 (side-push snap-in THT) ---
+# 4 holes in 6.5mm x 6.5mm square, Ø1.0mm drill, 1.8mm pad
+# Body: 7.3 x 7.22 x 4.3mm, side actuation (plunger faces outward)
+# Pin assignment (viewed from mounting face):
+#   Pin1 (signal IN)  at (-3.25, -3.25)
+#   Pin2 (signal OUT) at (+3.25, -3.25)
+#   Leg3 (snap-in)    at (-3.25, +3.25)  -- no net
+#   Leg4 (snap-in)    at (+3.25, +3.25)  -- no net
+# Signal: one pin -> BTN net, other -> GND (SPST)
+def skhll_fp(ref, x, y, btn_net):
     pads = [
-        pad_smd(-2.5, 0, 1.8, 2.8, un("GND"),    num="1"),
-        pad_smd( 2.5, 0, 1.8, 2.8, un(btn_net),  num="2"),
+        pad_thru(-3.25, -3.25, 1.0, 1.8, un(btn_net), num="1"),  # signal
+        pad_thru(+3.25, -3.25, 1.0, 1.8, un("GND"),   num="2"),  # GND
+        pad_thru(-3.25, +3.25, 1.0, 1.8, un("GND"),   num="3"),  # snap-in leg (GND)
+        pad_thru(+3.25, +3.25, 1.0, 1.8, un("GND"),   num="4"),  # snap-in leg (GND)
     ]
-    return fp(ref, x, y, "F.Cu", 0, pads, "Kailh-BlueDot")
+    return fp(ref, x, y, "F.Cu", 0, pads, "Alps-SKHLLBA010")
 
-footprints_upper.append(bluedot_fp("SW6", sw6x, sw6y, "BTN_BK"))
-footprints_upper.append(bluedot_fp("SW7", sw7x, sw7y, "BTN_FW"))
+footprints_upper.append(skhll_fp("SW6", sw6x, sw6y, "BTN_BK"))
+footprints_upper.append(skhll_fp("SW7", sw7x, sw7y, "BTN_FW"))
 
 # --- J5 FPC 6-pin 0.5mm (F.Cu, all on front layer for single-layer routing) ---
 fpc5_nets = ["3V3","GND","BTN_L","BTN_R","BTN_BK","BTN_FW"]

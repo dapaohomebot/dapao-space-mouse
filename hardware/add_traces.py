@@ -164,8 +164,8 @@ sw7x, sw7y = 122.0, 100.0
 fpc5x, fpc5y = 100.0, 108.0
 r1x,r1y = sw4x-1, sw4y+7
 r2x,r2y = sw5x-1, sw5y+7
-r3x,r3y = sw6x+4, sw6y-4
-r4x,r4y = sw7x-4, sw7y-4
+r3x,r3y = sw6x+5, sw6y-6   # R3 near SW6 SKHLLBA010
+r4x,r4y = sw7x-5, sw7y-6   # R4 near SW7 SKHLLBA010
 
 traces_upper = []
 
@@ -188,10 +188,10 @@ traces_upper += route([(fpc5x-0.75, fpc5y), (fpc5x-0.75, 98.0), (122.0, 98.0)], 
 traces_upper += L(sw4x, sw4y, sw4x, 98.0, U_GND, width=PP)
 # SW5 COM (sw5x, sw5y) → GND bus
 traces_upper += L(sw5x, sw5y, sw5x, 98.0, U_GND, width=PP)
-# SW6 GND pad
-traces_upper += L(sw6x-2.5, sw6y, 80.0, 98.0, U_GND, width=PP)
-# SW7 GND pad
-traces_upper += L(sw7x-2.5, sw7y, 119.5, 98.0, U_GND, width=PP)
+# SW6 GND pads (SKHLLBA010: pin2 at +3.25,-3.25 and legs at +-3.25,+3.25)
+traces_upper += L(sw6x+3.25, sw6y-3.25, 82.0, 98.0, U_GND, width=PP)
+# SW7 GND pads
+traces_upper += L(sw7x+3.25, sw7y-3.25, 119.0, 98.0, U_GND, width=PP)
 
 # ---- BTN_L ----
 # J5 pin3 (99.75, 108) → R1 → SW4 NO (at sw4x-5.08, sw4y)
@@ -206,12 +206,12 @@ traces_upper += L(r2x+0.5, r2y, sw5x-5.08, sw5y, U_BR, width=PW)
 # ---- BTN_BK ----
 # J5 pin5 (100.75, 108) → R3 → SW6 SIG
 traces_upper += route([(fpc5x+0.75, fpc5y), (fpc5x+0.75, 102.0), (82.0, 102.0), (r3x+0.5, 102.0), (r3x+0.5, r3y)], U_BBK, width=PW)
-traces_upper += L(r3x+0.5, r3y, sw6x+2.5, sw6y, U_BBK, width=PW)
+traces_upper += L(r3x+0.5, r3y, sw6x-3.25, sw6y-3.25, U_BBK, width=PW)  # SW6 SIG pin
 
 # ---- BTN_FW ----
-# J5 pin6 (101.25, 108) → R4 → SW7 SIG
+# J5 pin6 (101.25, 108) → R4 → SW7 SIG pin at (sw7x-3.25, sw7y-3.25)
 traces_upper += route([(fpc5x+1.25, fpc5y), (fpc5x+1.25, 103.0), (118.0, 103.0), (r4x+0.5, 103.0), (r4x+0.5, r4y)], U_BFW, width=PW)
-traces_upper += L(r4x+0.5, r4y, sw7x+2.5, sw7y, U_BFW, width=PW)
+traces_upper += L(r4x+0.5, r4y, sw7x-3.25, sw7y-3.25, U_BFW, width=PW)  # SW7 SIG pin
 
 pcb_upper = os.path.join(BASE, "upper_pcb/upper_pcb.kicad_pcb")
 append_traces(pcb_upper, traces_upper)
