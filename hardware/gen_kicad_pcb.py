@@ -286,12 +286,16 @@ fpc5_x, fpc5_y = UBX, UBY+8   # B.Cu
 
 footprints_upper = []
 
-# --- SW4/SW5 Kailh GM 8.0 Cherry MX THT ---
+# --- SW4/SW5 Kailh GM 8.0 mouse microswitch (corrected footprint) ---
+# 3 pins in a single HORIZONTAL row, 5.08mm (0.2") pitch
+# Matches Omron D2FC-F-7N standard (confirmed from D2FC datasheet)
+# NO(-5.08,0) -- COM(0,0) -- NC(+5.08,0)   all on same Y axis
+# Drill 1.0mm, pad 1.8mm diameter, body 12.8x5.8mm
 def gm8_fp(ref, x, y, btn_net):
     pads = [
-        pad_thru(-3.81, 0,    1.5, 2.0, un("GND"),    num="1"),  # NC (floating/GND)
-        pad_thru( 0,    3.81, 1.5, 2.0, un("GND"),    num="2"),  # COM -> GND
-        pad_thru( 3.81, 0,    1.5, 2.0, un(btn_net),  num="3"),  # NO -> signal
+        pad_thru(-5.08, 0, 1.0, 1.8, un(btn_net), num="1"),  # NO  -> BTN signal
+        pad_thru(  0.0, 0, 1.0, 1.8, un("GND"),   num="2"),  # COM -> GND
+        pad_thru(+5.08, 0, 1.0, 1.8, un("GND"),   num="3"),  # NC  -> floating (tied GND for safety)
     ]
     return fp(ref, x, y, "F.Cu", 0, pads, "Kailh-GM8.0")
 

@@ -184,24 +184,24 @@ traces_upper += L(118.0, 96.0, r4x-0.5, r4y, U_3V3, width=PP)
 # ---- GND rail (bus at Y=98) ----
 # J5 FPC pin2 (GND) at (99.25, 108) → up to bus
 traces_upper += route([(fpc5x-0.75, fpc5y), (fpc5x-0.75, 98.0), (122.0, 98.0)], U_GND, width=PP)
-# SW4 COM → GND
-traces_upper += L(sw4x, sw4y+3.81, sw4x, 98.0, U_GND, width=PP)
-# SW5 COM → GND
-traces_upper += L(sw5x, sw5y+3.81, sw5x, 98.0, U_GND, width=PP)
+# SW4 COM (0,0 from sw4 center = sw4x, sw4y) → GND bus
+traces_upper += L(sw4x, sw4y, sw4x, 98.0, U_GND, width=PP)
+# SW5 COM (sw5x, sw5y) → GND bus
+traces_upper += L(sw5x, sw5y, sw5x, 98.0, U_GND, width=PP)
 # SW6 GND pad
 traces_upper += L(sw6x-2.5, sw6y, 80.0, 98.0, U_GND, width=PP)
 # SW7 GND pad
 traces_upper += L(sw7x-2.5, sw7y, 119.5, 98.0, U_GND, width=PP)
 
 # ---- BTN_L ----
-# J5 pin3 (99.75, 108) → R1 → SW4 NO
+# J5 pin3 (99.75, 108) → R1 → SW4 NO (at sw4x-5.08, sw4y)
 traces_upper += route([(fpc5x-0.25, fpc5y), (fpc5x-0.25, 104.0), (r1x+0.5, 104.0), (r1x+0.5, r1y)], U_BL, width=PW)
-traces_upper += L(r1x+0.5, r1y, sw4x+3.81, sw4y, U_BL, width=PW)
+traces_upper += L(r1x+0.5, r1y, sw4x-5.08, sw4y, U_BL, width=PW)
 
 # ---- BTN_R ----
-# J5 pin4 (100.25, 108) → R2 → SW5 NO
+# J5 pin4 (100.25, 108) → R2 → SW5 NO (at sw5x-5.08, sw5y)
 traces_upper += route([(fpc5x+0.25, fpc5y), (fpc5x+0.25, 105.0), (r2x+0.5, 105.0), (r2x+0.5, r2y)], U_BR, width=PW)
-traces_upper += L(r2x+0.5, r2y, sw5x+3.81, sw5y, U_BR, width=PW)
+traces_upper += L(r2x+0.5, r2y, sw5x-5.08, sw5y, U_BR, width=PW)
 
 # ---- BTN_BK ----
 # J5 pin5 (100.75, 108) → R3 → SW6 SIG

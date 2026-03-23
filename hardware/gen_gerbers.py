@@ -563,14 +563,17 @@ fcu2 += outline(UBX, UBY, UR-0.3, apt=10)
 fcu2 += circ_pad(UBX-15, UBY, 4.4, 20)
 fcu2 += circ_pad(UBX+15, UBY, 4.4, 21)
 
-# SW4/SW5 Kailh GM 8.0 THT Cherry-MX (3-pin: NC, COM, NO)
+# SW4/SW5 Kailh GM 8.0 mouse microswitch (CORRECTED footprint)
+# 3 pins horizontal row, 5.08mm pitch (matches Omron D2FC-F-7N standard)
+# NO(-5.08,0) -- COM(0,0) -- NC(+5.08,0)
+# Drill 1.0mm, pad 1.8mm
 apt = 30
-fcu2.append(f"%ADD{apt}C,2.00*%")
+fcu2.append(f"%ADD{apt}C,1.80*%")
 fcu2.append(f"D{apt}*")
 for sx,sy in [(sw4x,sw4y),(sw5x,sw5y)]:
-    fcu2.append(f"X{int((sx-3.81)*1e6):+010d}Y{int(sy*1e6):+010d}D03*")   # NC
-    fcu2.append(f"X{int(sx*1e6):+010d}Y{int((sy+3.81)*1e6):+010d}D03*")   # COM->GND
-    fcu2.append(f"X{int((sx+3.81)*1e6):+010d}Y{int(sy*1e6):+010d}D03*")   # NO->signal
+    fcu2.append(f"X{int((sx-5.08)*1e6):+010d}Y{int(sy*1e6):+010d}D03*")   # NO -> BTN signal
+    fcu2.append(f"X{int(sx*1e6):+010d}Y{int(sy*1e6):+010d}D03*")           # COM -> GND
+    fcu2.append(f"X{int((sx+5.08)*1e6):+010d}Y{int(sy*1e6):+010d}D03*")   # NC -> float/GND
 
 # SW6/SW7 Kailh Blue Dot SMD (2-pad 1.8x2.8mm, 5mm pitch)
 apt = 31
@@ -619,17 +622,19 @@ silk2.append("%ADD10C,0.15*%")
 
 # Label hierarchy: REF=0.50, name=0.36, net/pin=0.22
 
-# SW4/SW5 GM 8.0 (Cherry MX THT)
+# SW4/SW5 GM 8.0 (corrected: 3 pins horizontal, 5.08mm pitch)
 for sx,sy,lbl,func in [(sw4x,sw4y,"SW4","L-CLK"),(sw5x,sw5y,"SW5","R-CLK")]:
-    silk2 += silk_box(sx, sy, 14.0, 14.0)
+    # Body outline 12.8x5.8mm, centered on COM pin at (sx,sy)
+    silk2 += silk_box(sx, sy, 12.8, 5.8)
     silk2 += silk_cross(sx, sy)
-    silk2 += silk_pin1(sx-3.81, sy)
-    silk2 += silk_label(sx, sy-9.5, lbl, scale=0.50)
-    silk2 += silk_label(sx, sy-7.8, "GM8.0", scale=0.36)
-    silk2 += silk_label(sx, sy-6.3, func, scale=0.36)
-    # Pin labels below body
-    silk2 += silk_label(sx-3.81, sy+8.2, "NC", scale=0.22)
-    silk2 += silk_label(sx,      sy+8.2, "GND", scale=0.22)
+    silk2 += silk_pin1(sx-5.08, sy)  # pin1 marker at NO pin
+    silk2 += silk_label(sx, sy-5.5, lbl, scale=0.50)
+    silk2 += silk_label(sx, sy-4.0, "GM8.0", scale=0.36)
+    silk2 += silk_label(sx, sy-2.8, func, scale=0.36)
+    # Pin labels: NO=BTN, COM=GND, NC=NC
+    silk2 += silk_label(sx-5.08, sy+4.0, "NO-SIG", scale=0.22)
+    silk2 += silk_label(sx,      sy+4.0, "COM-GND", scale=0.22)
+    silk2 += silk_label(sx+5.08, sy+4.0, "NC", scale=0.22)
     silk2 += silk_label(sx+3.81, sy+8.2, "SIG", scale=0.22)
 
 # SW6/SW7 Blue Dot SMD
@@ -688,7 +693,7 @@ write_gerber(f"{UPPER_OUT}/upper_pcb-B_SilkS.gbr", [("B.SilkS", bsilk2)])
 # Upper drill
 upper_holes = [(UBX-15, UBY, 2.2, True), (UBX+15, UBY, 2.2, True)]
 for sx,sy in [(sw4x,sw4y),(sw5x,sw5y)]:
-    upper_holes += [(sx-3.81, sy, 1.5, True), (sx, sy+3.81, 1.5, True), (sx+3.81, sy, 1.5, True)]
+    upper_holes += [(sx-5.08, sy, 1.0, True), (sx, sy, 1.0, True), (sx+5.08, sy, 1.0, True)]
 
 write_drill(f"{UPPER_OUT}/upper_pcb-PTH.drl", upper_holes)
 
