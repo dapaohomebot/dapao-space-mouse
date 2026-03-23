@@ -28,147 +28,125 @@ def append_traces(pcb_path, traces):
     with open(pcb_path,"w") as f: f.write(content)
 
 # Net indices — must match gen_kicad_pcb.py L_NETS / U_NETS order
-# Lower: 0="" 1=GND 2=3V3 3=VBUS 4=BAT_PLUS 5=SW_OUT
-#        6=JOY_X 7=JOY_Y 8=JOY_SW 9=ADC_BAT
-#        10=BTN_L 11=BTN_R 12=BTN_BK 13=BTN_FW 14=BT_SYNC 15=USB_DP 16=USB_DN
-LG=1; L3=2; LV=3; LB=4; LS=5; LJX=6; LJY=7; LJW=8
-LBL=10; LBR=11; LBK=12; LBF=13; LBT=14
+# Lower: 0="" 1=GND 2=3V3 3=VBAT
+#        4=JOY_X 5=JOY_Y 6=JOY_SW 7=ADC_BAT
+#        8=BTN_L 9=BTN_R 10=BTN_BK 11=BTN_FW 12=BT_SYNC
+LG=1; L3=2; LVB=3
+LJX=4; LJY=5; LJW=6; LADC=7
+LBL=8; LBR=9; LBK=10; LBF=11; LBT=12
 # Upper: 0="" 1=GND 2=3V3 3=BTN_L 4=BTN_R 5=BTN_BK 6=BTN_FW
 UG=1; U3=2; UBL=3; UBR=4; UBK=5; UBF=6
 
 PW=0.25; PP=0.35  # signal / power widths
 
 # ==============================================================
-# LOWER PCB — verified pad absolute positions
-# Board center (100,100). Component origins from gen_kicad_pcb.py.
+# LOWER PCB — Seeed XIAO ESP32-S3 Sense rev 3.0
+# USB-C charging + 3.3V LDO + LiPo charger all built into XIAO.
+# External: LiPo → SW1 → XIAO VIN pad. 3V3 sourced from XIAO.
 # ==============================================================
 
 # ---- XIAO U1 pads (center 100,70) ----
-XL = 100-8.75   # 91.25 — left castellated column X
-XR = 100+8.75   # 108.75 — right castellated column X
-# Left pads Y [3V3, GND, JOY_X, JOY_Y, JOY_SW, ADC_BAT, GND]
-LY = [70-9+i*3 for i in range(7)]  # [61,64,67,70,73,76,79]
-# Right pads Y [BTN_L, BTN_R, BTN_BK, BTN_FW, BT_SYNC, 3V3, GND]
-RY = [70-9+i*3 for i in range(7)]  # [61,64,67,70,73,76,79]
+# 2.54mm pitch, 8 pads per side
+XL = 100-8.75   # 91.25
+XR = 100+8.75   # 108.75
+# Left pads (top→bottom): GND, 3V3, JOY_X, JOY_Y, JOY_SW, ADC_BAT, GND, GND
+LY = [70 - 8.89 + i*2.54 for i in range(8)]
+# Right pads (top→bottom): VBAT, GND, BTN_L, BTN_R, BTN_BK, BTN_FW, BT_SYNC, GND
+RY = [70 - 8.89 + i*2.54 for i in range(8)]
 
-# ---- Component pad positions (absolute) ----
-# J1 USB-C (center 100,57): VBUS at (98.75,57), GND shells at (97.5,58.5)/(102.5,58.5)
+# ---- Component pad absolute positions ----
 # J4 Alps RKJXV (center 100,100):
 #   X-axis: CCW(3V3)=(93.6,93), Wiper(JX)=(97,93), CW(GND)=(100.4,93)
 #   Y-axis: CCW(3V3)=(93.6,107), Wiper(JY)=(97,107), CW(GND)=(100.4,107)
 #   SW: pin1(JOY_SW)=(103.8,95), pin2(GND)=(103.8,105)
 #   Mounting legs (GND): (92.3,91.2),(107.7,91.2),(92.3,108.8),(107.7,108.8)
-# J3 FPC (center 100,117): pins at (98.75..101.25, 117), step 0.5mm
-# U3 LDO (center 118,95):
-#   pin1(GND)=(117.05,96.4), pin2(3V3)=(118,96.4), pin3(SW_OUT/VIN)=(118.95,96.4)
-#   pin4(GND)=(117.05,93.6), pin5(CE=SW_OUT)=(118.95,93.6)
-# J2 JST-PH (center 92,115): pin1(BAT+)=(91,115), pin2(GND)=(93,115)
-# SW1 SPDT (center 62,100, rotated 90°):
-#   COM→(63.5,100), COM2→(62,100), NO(SW_OUT)→(60.5,100)
+# J3 FPC (center 100,117): pins at (98.75..101.25, 117), 0.5mm pitch
+# J2 JST-PH (center 92,115): pin1(VBAT+)=(91,115), pin2(GND)=(93,115)
+# SW1 SPDT (center 62,100, rotated 90°): COM=VBAT, NO → XIAO VIN
+#   pin1(COM at 63.5,100), pin3(NO at 60.5,100)
 # SW_BT (center 100,140): pin1(BT_SYNC)=(98.5,140), pin2(GND)=(101.5,140)
 # R_PU5 (center 108,92): pin1(3V3)=(107.5,92), pin2(JOY_SW)=(108.5,92)
 # R_PU_BT (center 105,135): pin1(3V3)=(104.5,135), pin2(BT_SYNC)=(105.5,135)
-# C1-C3 (centers 94,82 / 96,82 / 98,82): 3V3 at x-0.5, GND at x+0.5
-# C4 0805 (center 123,98): pin1(3V3)=(122,98), pin2(GND)=(124,98)
-# R10/R11 CC (centers 106,60 / 106,62): VBUS at x-0.5, GND at x+0.5
+# C1-C3 (centers 94,82/96,82/98,82): 3V3=(x-0.5,82), GND=(x+0.5,82)
 
 traces_lower = []
 
-# ---- 3V3 power rail bus (Y=82) ----
-# XIAO L-pin1 (3V3 at 91.25,61) → west bus at X=90 → rail Y=82
-traces_lower += route([(XL,LY[0]),(XL,82),(115,82)], L3, width=PP)
-# XIAO R-pin6 (3V3 at 108.75,76) → rail
-traces_lower += route([(XR,RY[5]),(XR,82),(115,82)], L3, width=PP)
-# LDO pin2 (3V3 out at 118,96.4) → up to rail
-traces_lower += L(118,96.4, 115,82, L3, w=PP)
-# West spur at X=90 for joystick CCW pins and FPC pin1
-traces_lower += route([(90,82),(90,117)], L3, width=PP)  # vertical bus
-traces_lower += seg(90,82,115,82, L3, width=PP)          # connect west spur to main rail
-# J4 X-CCW tap from west spur
+# ---- 3V3 rail (horizontal bus Y=82, sourced from XIAO left pad 2) ----
+# XIAO L-pad2 (3V3 at XL, LY[1]) → bus Y=82
+traces_lower += route([(XL,LY[1]),(XL,82),(115,82)], L3, width=PP)
+# West spur at X=90 serving joystick CCW and FPC
+traces_lower += route([(90,82),(90,117)], L3, width=PP)
+traces_lower += seg(90,82, XL,82, L3, width=PP)
+# J4 X-CCW tap (93.6,93)
 traces_lower += seg(90,93, 93.6,93, L3, width=PP)
-# J4 Y-CCW tap
+# J4 Y-CCW tap (93.6,107)
 traces_lower += seg(90,107, 93.6,107, L3, width=PP)
-# J3 FPC pin1 (3V3) tap
+# J3 FPC pin1 (98.75,117)
 traces_lower += seg(90,117, 98.75,117, L3, width=PP)
-# R_PU5 pin1 (3V3) from rail
+# R_PU5 pin1 (107.5,92)
 traces_lower += route([(115,82),(115,92),(107.5,92)], L3, width=PP)
-# R_PU_BT pin1 (3V3) from west spur
+# R_PU_BT pin1 (104.5,135)
 traces_lower += route([(90,107),(90,135),(104.5,135)], L3, width=PP)
-# C4 pin1 (3V3)
-traces_lower += route([(115,82),(122,82),(122,98)], L3, width=PP)
-# C1 pin1 tap
+# C1-C3 decoupling
 traces_lower += route([(93.5,82),(93.5,79),(XL,79)], L3, width=PP)
 
 # ---- GND rail (east column X=120, bus Y=84) ----
-# XIAO L-pin2 (GND at 91.25,64) → bus
-traces_lower += route([(XL,LY[1]),(XL,84),(120,84)], LG, width=PP)
-# XIAO R-pin7 (GND at 108.75,79) → bus
-traces_lower += route([(XR,RY[6]),(XR,84),(120,84)], LG, width=PP)
-# J1 USB-C GND shell (97.5,58.5) → bus
-traces_lower += L(97.5,58.5, 120,84, LG, w=PP)
-# J4 joystick GND pads → east column
+# XIAO L-pad1 (GND at XL,LY[0])
+traces_lower += route([(XL,LY[0]),(XL,84),(120,84)], LG, width=PP)
+# XIAO R-pad8 (GND at XR,RY[7])
+traces_lower += route([(XR,RY[7]),(XR,84),(120,84)], LG, width=PP)
+# XIAO R-pad2 (GND at XR,RY[1])
+traces_lower += L(XR,RY[1], 120,84, LG, w=PP)
+# J4 joystick GND pads
 traces_lower += route([(100.4,93),(120,93),(120,84)], LG, width=PP)
 traces_lower += route([(100.4,107),(120,107),(120,84)], LG, width=PP)
 traces_lower += route([(103.8,105),(120,105),(120,107)], LG, width=PP)
-# J4 mounting legs (GND)
 traces_lower += L(92.3,91.2, 90,84, LG, w=PP)
 traces_lower += L(107.7,91.2, 120,84, LG, w=PP)
-# J3 FPC pin2 (GND at 99.25,117) → west spur at X=85 → bus
+# J3 FPC pin2 (GND at 99.25,117)
 traces_lower += route([(99.25,117),(85,117),(85,84),(XL,84)], LG, width=PP)
-# U3 LDO GND pins
-traces_lower += route([(117.05,96.4),(120,96.4),(120,84)], LG, width=PP)
-traces_lower += route([(117.05,93.6),(120,93.6),(120,84)], LG, width=PP)
-# C4 pin2 (GND at 124,98) → east column
-traces_lower += route([(124,98),(120,98),(120,96.4)], LG, width=PP)
-# J2 battery pin2 (GND at 93,115) → west spur
+# J2 LiPo GND (93,115)
 traces_lower += route([(93,115),(85,115),(85,117)], LG, width=PP)
-# SW_BT pin2 (GND at 101.5,140)
+# SW_BT pin2 GND (101.5,140)
 traces_lower += L(101.5,140, 120,107, LG, w=PP)
-# C1 pin2 (GND at 94.5,82) → bus
+# C1-C3 GND
 traces_lower += route([(94.5,82),(94.5,84),(XL,84)], LG, width=PP)
 
-# ---- VBUS ----
-# J1 USB-C VBUS pad (98.75,57) → XIAO VBUS (internal, connect to pad nearest top)
-traces_lower += L(98.75,57, 98.75,62, LV, w=PP)
+# ---- VBAT rail ----
+# J2 pin1 (VBAT+ at 91,115) → SW1 COM (63.5,100) → SW1 NO (60.5,100) → XIAO R-pad1 (XR,RY[0])
+traces_lower += route([(91,115),(75,115),(75,105),(65,105),(65,100),(63.5,100)], LVB, width=PP)
+# SW1 NO → XIAO VIN pad (right pad 1 = VBAT)
+traces_lower += route([(60.5,100),(56,100),(56,62),(XR,62),(XR,RY[0])], LVB, width=PP)
 
-# ---- BAT_PLUS ----
-# J2 pin1 (BAT+ at 91,115) → around components → SW1 COM (63.5,100)
-traces_lower += route([(91,115),(75,115),(75,105),(65,105),(65,100),(63.5,100)], LB, width=PP)
-
-# ---- SW_OUT ----
-# SW1 NO (at 60.5,100) → U3 LDO VIN pin3 (118.95,96.4) and CE pin5 (118.95,93.6)
-traces_lower += route([(60.5,100),(56,100),(56,90),(119,90),(118.95,93.6)], LS, width=PP)
-traces_lower += seg(118.95,93.6, 118.95,96.4, LS, width=PP)
-
-# ---- JOY_X → XIAO GPIO1 (left pad 3, Y=67) ----
-# J4 X wiper (97,93) → XIAO left pad
+# ---- JOY_X → XIAO left pad 3 (LY[2]) ----
 traces_lower += route([(97,93),(88,93),(88,LY[2]),(XL,LY[2])], LJX, width=PW)
 
-# ---- JOY_Y → XIAO GPIO2 (left pad 4, Y=70) ----
-# J4 Y wiper (97,107) → XIAO left pad
+# ---- JOY_Y → XIAO left pad 4 (LY[3]) ----
 traces_lower += route([(97,107),(86,107),(86,LY[3]),(XL,LY[3])], LJY, width=PW)
 
-# ---- JOY_SW → R_PU5 → XIAO GPIO3 (left pad 5, Y=73) ----
-# J4 SW pin1 (103.8,95) → R_PU5 pin2 (108.5,92)
+# ---- JOY_SW → R_PU5 → XIAO left pad 5 (LY[4]) ----
 traces_lower += route([(103.8,95),(108.5,95),(108.5,92)], LJW, width=PW)
-# R_PU5 pin2 → XIAO left pad 5
 traces_lower += route([(108.5,92),(108.5,88),(XL,88),(XL,LY[4])], LJW, width=PW)
 
+# ---- ADC_BAT → XIAO left pad 6 (LY[5]) ----
+# (battery voltage divider or direct VBAT sense — connect via 100k/100k divider if desired)
+# For now routed as direct net placeholder
+traces_lower += L(XL,LY[5], XL,LY[5], LADC, w=PW)  # stub — extend to divider if added
+
 # ---- BTN_L → J3 FPC pin3 (99.75,117) ----
-traces_lower += route([(XR,RY[0]),(112,RY[0]),(112,117.5),(99.75,117.5),(99.75,117)], LBL, width=PW)
+traces_lower += route([(XR,RY[2]),(112,RY[2]),(112,117.5),(99.75,117.5),(99.75,117)], LBL, width=PW)
 
 # ---- BTN_R → J3 FPC pin4 (100.25,117) ----
-traces_lower += route([(XR,RY[1]),(113,RY[1]),(113,118),(100.25,118),(100.25,117)], LBR, width=PW)
+traces_lower += route([(XR,RY[3]),(113,RY[3]),(113,118),(100.25,118),(100.25,117)], LBR, width=PW)
 
 # ---- BTN_BK → J3 FPC pin5 (100.75,117) ----
-traces_lower += route([(XR,RY[2]),(114,RY[2]),(114,118.5),(100.75,118.5),(100.75,117)], LBK, width=PW)
+traces_lower += route([(XR,RY[4]),(114,RY[4]),(114,118.5),(100.75,118.5),(100.75,117)], LBK, width=PW)
 
 # ---- BTN_FW → J3 FPC pin6 (101.25,117) ----
-traces_lower += route([(XR,RY[3]),(115,RY[3]),(115,119),(101.25,119),(101.25,117)], LBF, width=PW)
+traces_lower += route([(XR,RY[5]),(115,RY[5]),(115,119),(101.25,119),(101.25,117)], LBF, width=PW)
 
 # ---- BT_SYNC → R_PU_BT → SW_BT ----
-# XIAO right pad 5 (BT_SYNC at 108.75,73) → R_PU_BT pin2 (105.5,135) → SW_BT pin1 (98.5,140)
-traces_lower += route([(XR,RY[4]),(116,RY[4]),(116,130),(105.5,130),(105.5,135)], LBT, width=PW)
+traces_lower += route([(XR,RY[6]),(116,RY[6]),(116,130),(105.5,130),(105.5,135)], LBT, width=PW)
 traces_lower += route([(105.5,135),(105.5,138),(98.5,138),(98.5,140)], LBT, width=PW)
 
 pcb_lower = os.path.join(BASE,"lower_pcb/lower_pcb.kicad_pcb")
