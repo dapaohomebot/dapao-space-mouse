@@ -5,70 +5,35 @@
   (paper "A3")
 
   (title_block
-    (title "DaPao Space Mouse — Lower PCB")
-    (date "2026-03-11")
-    (rev "1.0")
-    (comment 1 "Base board: ESP32-S3 + Power + Joystick + FPC")
-    (comment 2 "Circular PCB ∅88mm, 2-layer")
+    (title "DaPao Space Mouse - Lower PCB")
+    (date "2026-03-21")
+    (rev "2.0")
+    (comment 1 "Base board: XIAO ESP32-S3 + Power + Joystick + FPC")
+    (comment 2 "Circular PCB dia88mm, 2-layer, 1.6mm thick")
+    (comment 3 "Rev 2.0: Removed TP4056/USBLC6/voltage divider - XIAO handles charging, ESD, BAT ADC internally")
+    (comment 4 "XIAO onboard charger ~100mA via USB-C. BAT voltage on GPIO10 (ADC_BAT). BAT+ wired to XIAO BAT pad.")
   )
-
-  ;; ============================================================
-  ;; This schematic defines the netlist and component references
-  ;; for the lower (base) PCB. Open in KiCad 7+ schematic editor,
-  ;; then assign footprints and place symbols interactively.
-  ;;
-  ;; Components are placed as text annotations for reference.
-  ;; Use "Place Symbol" in KiCad to add each from the library.
-  ;; ============================================================
 
   ;; --- POWER NETS ---
-  (global_label "VBUS" (shape input) (at 30 40 0) (uuid "00000001-0001-0001-0001-000000000001")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "BAT+" (shape bidirectional) (at 30 55 0) (uuid "00000001-0001-0001-0001-000000000002")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "3V3" (shape output) (at 30 70 0) (uuid "00000001-0001-0001-0001-000000000003")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "GND" (shape passive) (at 30 85 0) (uuid "00000001-0001-0001-0001-000000000004")
-    (effects (font (size 1.27 1.27)))
-  )
+  (global_label "VBUS"  (shape input)        (at 30 40 0) (uuid "00000001-0001-0001-0001-000000000001") (effects (font (size 1.27 1.27))))
+  (global_label "BAT+"  (shape bidirectional) (at 30 55 0) (uuid "00000001-0001-0001-0001-000000000002") (effects (font (size 1.27 1.27))))
+  (global_label "3V3"   (shape output)        (at 30 70 0) (uuid "00000001-0001-0001-0001-000000000003") (effects (font (size 1.27 1.27))))
+  (global_label "GND"   (shape passive)       (at 30 85 0) (uuid "00000001-0001-0001-0001-000000000004") (effects (font (size 1.27 1.27))))
 
   ;; --- SIGNAL NETS ---
-  (global_label "USB_DP" (shape bidirectional) (at 80 40 0) (uuid "00000001-0001-0001-0001-000000000010")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "USB_DN" (shape bidirectional) (at 80 45 0) (uuid "00000001-0001-0001-0001-000000000011")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "JOY_X" (shape input) (at 80 55 0) (uuid "00000001-0001-0001-0001-000000000012")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "JOY_Y" (shape input) (at 80 60 0) (uuid "00000001-0001-0001-0001-000000000013")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "JOY_SW" (shape input) (at 80 65 0) (uuid "00000001-0001-0001-0001-000000000014")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "VBAT_SENSE" (shape input) (at 80 70 0) (uuid "00000001-0001-0001-0001-000000000015")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "BTN_LEFT" (shape input) (at 80 80 0) (uuid "00000001-0001-0001-0001-000000000016")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "BTN_RIGHT" (shape input) (at 80 85 0) (uuid "00000001-0001-0001-0001-000000000017")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "BTN_BACK" (shape input) (at 80 90 0) (uuid "00000001-0001-0001-0001-000000000018")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "BTN_FWD" (shape input) (at 80 95 0) (uuid "00000001-0001-0001-0001-000000000019")
-    (effects (font (size 1.27 1.27)))
-  )
+  (global_label "USB_DP"    (shape bidirectional) (at 80 40 0) (uuid "00000001-0001-0001-0001-000000000010") (effects (font (size 1.27 1.27))))
+  (global_label "USB_DN"    (shape bidirectional) (at 80 45 0) (uuid "00000001-0001-0001-0001-000000000011") (effects (font (size 1.27 1.27))))
+  (global_label "JOY_X"     (shape input)         (at 80 55 0) (uuid "00000001-0001-0001-0001-000000000012") (effects (font (size 1.27 1.27))))
+  (global_label "JOY_Y"     (shape input)         (at 80 60 0) (uuid "00000001-0001-0001-0001-000000000013") (effects (font (size 1.27 1.27))))
+  (global_label "JOY_SW"    (shape input)         (at 80 65 0) (uuid "00000001-0001-0001-0001-000000000014") (effects (font (size 1.27 1.27))))
+  (global_label "ADC_BAT"   (shape input)         (at 80 70 0) (uuid "00000001-0001-0001-0001-000000000015") (effects (font (size 1.27 1.27))))
+  (global_label "BTN_LEFT"  (shape input)         (at 80 80 0) (uuid "00000001-0001-0001-0001-000000000016") (effects (font (size 1.27 1.27))))
+  (global_label "BTN_RIGHT" (shape input)         (at 80 85 0) (uuid "00000001-0001-0001-0001-000000000017") (effects (font (size 1.27 1.27))))
+  (global_label "BTN_BACK"  (shape input)         (at 80 90 0) (uuid "00000001-0001-0001-0001-000000000018") (effects (font (size 1.27 1.27))))
+  (global_label "BTN_FWD"   (shape input)         (at 80 95 0) (uuid "00000001-0001-0001-0001-000000000019") (effects (font (size 1.27 1.27))))
 
-  ;; --- TEXT ANNOTATIONS (component placement guide) ---
-  (text "=== LOWER PCB COMPONENT PLACEMENT ===\n\nU1: ESP32-S3-WROOM-1 — Center-right of board\n     GPIO1→JOY_X, GPIO2→JOY_Y, GPIO3→JOY_SW\n     GPIO4→VBAT_SENSE, GPIO5→BTN_LEFT\n     GPIO6→BTN_RIGHT, GPIO7→BTN_BACK, GPIO8→BTN_FWD\n     GPIO19→USB_DN, GPIO20→USB_DP\n     3V3→3V3, GND→GND\n\nU2: TP4056 (SOP-8) — Near USB-C connector\n     VIN→VBUS, BAT→BAT+, GND→GND\n     PROG→2kΩ→GND (500mA charge)\n     CHRG→1kΩ→LED_RED→GND\n     STDBY→1kΩ→LED_GRN→GND\n\nU3: AP2112K-3.3 (SOT-23-5) — Between battery and ESP32\n     VIN→switched BAT+, VOUT→3V3, GND→GND\n     CE→VIN (always enabled)\n\nU4: USBLC6-2SC6 (SOT-23-6) — Next to USB-C\n     IO1→USB_DP, IO2→USB_DN, VBUS→VBUS, GND→GND\n\nJ1: USB-C Receptacle — Board edge (aligned with base port)\n     VBUS, D+→USB_DP, D-→USB_DN, GND\n     CC1→5.1kΩ→GND, CC2→5.1kΩ→GND\n\nJ2: JST-PH 2-pin — Battery connector\n     Pin1→BAT+, Pin2→GND\n\nJ3: FPC 6-pin 0.5mm — Center of board (cable goes up)\n     Pin1→3V3, Pin2→GND\n     Pin3→BTN_LEFT, Pin4→BTN_RIGHT\n     Pin5→BTN_BACK, Pin6→BTN_FWD\n\nJ4: 5-pin header — Center (joystick module)\n     Pin1→3V3, Pin2→GND\n     Pin3→JOY_X, Pin4→JOY_Y, Pin5→JOY_SW\n\nSW1: Slide switch (SPDT) — Board edge\n     COM→BAT+, NO→VIN_SWITCHED\n\nSW2: Tactile (BOOT) — Near ESP32\n     GPIO0→GND when pressed\n\nSW3: Tactile (RESET) — Near ESP32\n     EN→GND when pressed\n\nPull-ups (10kΩ to 3V3):\n     R_PU1→BTN_LEFT, R_PU2→BTN_RIGHT\n     R_PU3→BTN_BACK, R_PU4→BTN_FWD\n     R_PU5→JOY_SW\n\nBattery voltage divider:\n     BAT+→R5(100kΩ)→VBAT_SENSE→R6(100kΩ)→GND\n\nDecoupling:\n     C1-C4: 100nF on 3V3 near ESP32 (each side)\n     C5: 10µF bulk on 3V3\n     C6: 10µF on VBUS\n     C7: 10µF on BAT+"
+  ;; --- COMPONENT PLACEMENT & WIRING NOTES ---
+  (text "=== LOWER PCB  rev 2.0  ===\n\n*** XIAO ESP32-S3 handles: LiPo charging, USB ESD, battery ADC internally ***\n*** Removed: U2 TP4056, U4 USBLC6, R5/R6 voltage divider, LED1/LED2 ***\n\nU1: Seeed XIAO ESP32-S3 (castellated module)\n     PLACEMENT: North half of board, USB-C end facing north/forward\n     GPIO1  -> JOY_X\n     GPIO2  -> JOY_Y\n     GPIO3  -> JOY_SW\n     GPIO9  -> BT_SYNC (SW_BT, pull-up R_PU_BT)\n     GPIO10 -> ADC_BAT (onboard voltage divider, reads battery level 0-3.3V)\n     GPIO5  -> BTN_LEFT\n     GPIO6  -> BTN_RIGHT\n     GPIO7  -> BTN_BACK\n     GPIO8  -> BTN_FWD\n     3V3    -> 3V3 rail (output)\n     GND    -> GND\n     BAT+   -> BAT+ rail (connects to J2 positive pin + SW1)\n     USB-C  -> handled internally (charge + HID data)\n     KEEPOUT: no copper within 3mm of antenna (module NW corner)\n     NOTE: GPIO10/ADC_BAT has onboard divider already - connect directly\n     NOTE: Onboard charger LED (red) on XIAO module itself\n\nU3: AP2112K-3.3V (SOT-23-5)\n     PLACEMENT: East quadrant\n     VIN  -> switched BAT+ via SW1 (master power)\n     VOUT -> 3V3 rail\n     GND  -> GND\n     CE   -> VIN (always on when SW1 ON)\n     PURPOSE: Powers J4 joystick module and J3 FPC 3V3 line\n     NOTE: XIAO has its own internal 3V3 regulator for its own logic.\n           External U3 provides 3V3 for peripherals (joystick + FPC).\n\nJ1: USB-C receptacle (mid-mount)\n     PLACEMENT: North board edge, USB-C facing forward/north\n     VBUS -> XIAO VBUS pad (charging)\n     D+   -> XIAO USB_DP (internal ESD on XIAO)\n     D-   -> XIAO USB_DN\n     GND  -> GND\n     CC1  -> R10(5.1k) -> GND\n     CC2  -> R11(5.1k) -> GND\n\nJ2: JST-PH 2-pin right-angle\n     PLACEMENT: SW quadrant\n     Pin1 -> BAT+ (connects to XIAO BAT pad + SW1 COM + U3 VIN)\n     Pin2 -> GND\n     Battery: 3.7V LiPo 400mAh typical\n\nJ3: FPC 6-pin 0.5mm top-contact\n     PLACEMENT: Center-south (between J4 joystick and south edge)\n     Pin1 -> 3V3\n     Pin2 -> GND\n     Pin3 -> BTN_LEFT  (GPIO5)\n     Pin4 -> BTN_RIGHT (GPIO6)\n     Pin5 -> BTN_BACK  (GPIO7)\n     Pin6 -> BTN_FWD   (GPIO8)\n     NOTE: BTN pull-ups R1-R4 on upper PCB, not here\n\nJ4: Alps RKJXV1224005 (direct THT solder, no module, no header)\n     PLACEMENT: Board center, shaft pointing up through body shell coupler\n     Body: 18.2 x 21.7mm, height 11.2mm, shaft adds ~10mm more\n     10 pins: 4 mounting legs (structural, tie to GND pour) + 6 signal pins\n     X-axis: CCW->3V3, Wiper->JOY_X(GPIO1), CW->GND\n     Y-axis: CCW->3V3, Wiper->JOY_Y(GPIO2), CW->GND\n     SW push: one pin->GND, other->JOY_SW(GPIO3) with R_PU5 10k pull-up to 3V3\n     Pin hole dia: 1.0mm signal pins, 1.5mm mounting legs\n     Datasheet: https://tech.alpsalpine.com/e/products/detail/RKJXV1224005/\n     Buy: https://www.mouser.com/ProductDetail/Alps-Alpine/RKJXV1224005\n     LCSC: C146170\n\nSW1: SPDT slide switch MSK-12C02\n     PLACEMENT: West board edge\n     COM -> BAT+\n     NO  -> U3 VIN (cuts 3V3 to peripherals)\n     NOTE: XIAO continues to charge via USB regardless of SW1 position\n\nSW2: Tactile 3x4mm (BOOT)\n     PLACEMENT: East of U1\n     GPIO0 -> GND when pressed (firmware flash mode with SW3)\n\nSW3: Tactile 3x4mm (RESET)\n     PLACEMENT: East of U1, below SW2\n     EN -> GND when pressed\n\nSW_BT: Tactile 3x4mm (BT SYNC/PAIR)\n     PLACEMENT: South board edge, base_ring cutout at sw_bt_angle=90deg\n     GPIO9 -> GND when pressed\n     Pull-up: R_PU_BT 10k from 3V3 -> GPIO9\n     Firmware: tap=reconnect, hold 3s=BLE pair mode\n\nResistors:\n     R_PU5:   10k 0402  3V3->JOY_SW (GPIO3 pull-up)\n     R_PU_BT: 10k 0402  3V3->GPIO9  (BT sync pull-up)\n     R10:    5.1k 0402  USB-C CC1->GND\n     R11:    5.1k 0402  USB-C CC2->GND\n     REMOVED: R5/R6 (VBAT divider), R7/R8/R9 (TP4056 PROG/LED)\n\nDecoupling caps:\n     C1-C3: 100nF 0402  3V3 rail near U1 and U3\n     C4:    10uF  0805  3V3 bulk\n     C5:    10uF  0805  BAT+ bulk\n     REMOVED: C6 (VBUS bulk - handled by XIAO internally)"
     (at 120 30 0)
     (uuid "00000001-0001-0001-0001-000000000099")
     (effects (font (size 1.27 1.27)) (justify left))
