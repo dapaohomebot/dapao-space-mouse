@@ -171,11 +171,11 @@ for i,(dx,net) in enumerate([(-0.95,"GND"),(0,"3V3"),(0.95,"SW_OUT"),(-0.95,"GND
     ldo_pads.append(pad_smd(dx, dy, 0.55, 1.0, ln(net), num=str(i+1)))
 footprints_lower.append(fp("U3", LDO_X, LDO_Y, "F.Cu", 0, ldo_pads, "AP2112K-3.3V"))
 
-# --- J2 JST-PH 2-pin (B.Cu, bottom mount) ---
+# --- J2 JST-PH 2-pin (through-hole, F.Cu side, underside of board accessible via THT) ---
 bat_pads = []
 bat_pads.append(pad_thru(-1.0, 0, 1.0, 1.8, ln("BAT_PLUS"), num="1"))
 bat_pads.append(pad_thru( 1.0, 0, 1.0, 1.8, ln("GND"),      num="2"))
-footprints_lower.append(fp("J2", BAT_X, BAT_Y, "B.Cu", 0, bat_pads, "JST-PH-2P"))
+footprints_lower.append(fp("J2", BAT_X, BAT_Y, "F.Cu", 0, bat_pads, "JST-PH-2P"))
 
 # --- SW1 SPDT power switch ---
 sw1_pads = []
@@ -309,15 +309,15 @@ def bluedot_fp(ref, x, y, btn_net):
 footprints_upper.append(bluedot_fp("SW6", sw6x, sw6y, "BTN_BK"))
 footprints_upper.append(bluedot_fp("SW7", sw7x, sw7y, "BTN_FW"))
 
-# --- J5 FPC 6-pin 0.5mm (B.Cu, bottom of upper PCB) ---
+# --- J5 FPC 6-pin 0.5mm (F.Cu, all on front layer for single-layer routing) ---
 fpc5_nets = ["3V3","GND","BTN_L","BTN_R","BTN_BK","BTN_FW"]
 fpc5_pads = []
 for i,net in enumerate(fpc5_nets):
     px = -1.25 + i*0.5
-    fpc5_pads.append(pad_smd(px, 0, 0.4, 1.2, un(net), layer="B.Cu", num=str(i+1)))
-fpc5_pads.append(pad_smd(-2.5, 0.8, 1.2, 1.8, un("GND"), layer="B.Cu", num="7"))
-fpc5_pads.append(pad_smd( 2.5, 0.8, 1.2, 1.8, un("GND"), layer="B.Cu", num="8"))
-footprints_upper.append(fp("J5", fpc5_x, fpc5_y, "B.Cu", 0, fpc5_pads, "FPC-6P-0.5mm"))
+    fpc5_pads.append(pad_smd(px, 0, 0.4, 1.2, un(net), layer="F.Cu", num=str(i+1)))
+fpc5_pads.append(pad_smd(-2.5, 0.8, 1.2, 1.8, un("GND"), layer="F.Cu", num="7"))
+fpc5_pads.append(pad_smd( 2.5, 0.8, 1.2, 1.8, un("GND"), layer="F.Cu", num="8"))
+footprints_upper.append(fp("J5", fpc5_x, fpc5_y, "F.Cu", 0, fpc5_pads, "FPC-6P-0.5mm"))
 
 # --- R1-R4 pull-ups (10k 0402, 3V3 -> BTN signal) ---
 def r_0402u(ref, x, y, net1, net2, angle=0):
@@ -355,7 +355,7 @@ lines_u.append(silk_text("SW4 L-CLK",  sw4x, sw4y-9.5,  size=0.8))
 lines_u.append(silk_text("SW5 R-CLK",  sw5x, sw5y-9.5,  size=0.8))
 lines_u.append(silk_text("SW6 BACK",   sw6x, sw6y-6,    size=0.8))
 lines_u.append(silk_text("SW7 FWD",    sw7x, sw7y-6,    size=0.8))
-lines_u.append(silk_text("J5 FPC-DN",  fpc5_x, fpc5_y+4, layer="B.SilkS", size=0.8))
+lines_u.append(silk_text("J5 FPC-DN",  fpc5_x, fpc5_y+4, layer="F.SilkS", size=0.8))
 lines_u.append(silk_text("UPPER R1.6", UBX,  UBY+22,    size=0.8))
 lines_u.append(silk_text("FWD",        UBX,  UBY-24,    size=0.8))
 for fp_str in footprints_upper:
