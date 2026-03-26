@@ -5,19 +5,31 @@
   (paper "A4")
 
   (title_block
-    (title "DaPao Space Mouse — Upper PCB")
-    (date "2026-03-11")
-    (rev "1.0")
+    (title "DaPao Space Mouse - Upper PCB")
+    (date "2026-03-20")
+    (rev "1.3")
     (comment 1 "Button board: L/R click + Forward/Back")
-    (comment 2 "Circular PCB ∅54mm, 2-layer, 1.0mm thick")
+    (comment 2 "Circular PCB dia54mm, 2-layer, 1.0mm thick")
+    (comment 3 "Rev 1.3: SW4/SW5 -> Kailh GM 8.0 (3-pin THT). SW6/SW7 -> Kailh Blue Dot SMT side-mount.")
   )
 
   ;; ============================================================
-  ;; Simple board: 4 switches + FPC connector + decoupling cap
-  ;; All active-low (pull-ups on lower PCB)
+  ;; Components:
+  ;;   SW4/SW5: Kailh GM 8.0 micro switch (3-pin, Cherry-style)
+  ;;            12.8 x 5.8 x 6.5mm, 2.54mm pin pitch
+  ;;            Pins: COM (common), NO (normally open), NC (normally closed)
+  ;;            We use COM + NO only (active-low with pull-up)
+  ;;
+  ;;   SW6/SW7: Kailh Blue Dot SMT side-button micro switch
+  ;;            ~8.75mm, SMD, plunger faces outward (left/right)
+  ;;            2-pin: signal + GND
+  ;;
+  ;;   R1-R4:   10k 0402 pull-ups (3V3 -> each BTN signal)
+  ;;   C1:      100nF 0402 decoupling on 3V3
+  ;;   J5:      FPC 6-pin 0.5mm top-contact (cable to lower PCB)
   ;; ============================================================
 
-  ;; --- POWER NETS (from FPC) ---
+  ;; --- POWER NETS ---
   (global_label "3V3" (shape input) (at 30 40 0) (uuid "00000002-0001-0001-0001-000000000001")
     (effects (font (size 1.27 1.27)))
   )
@@ -25,22 +37,14 @@
     (effects (font (size 1.27 1.27)))
   )
 
-  ;; --- BUTTON NETS ---
-  (global_label "BTN_LEFT" (shape output) (at 80 40 0) (uuid "00000002-0001-0001-0001-000000000010")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "BTN_RIGHT" (shape output) (at 80 50 0) (uuid "00000002-0001-0001-0001-000000000011")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "BTN_BACK" (shape output) (at 80 60 0) (uuid "00000002-0001-0001-0001-000000000012")
-    (effects (font (size 1.27 1.27)))
-  )
-  (global_label "BTN_FWD" (shape output) (at 80 70 0) (uuid "00000002-0001-0001-0001-000000000013")
-    (effects (font (size 1.27 1.27)))
-  )
+  ;; --- BUTTON SIGNAL NETS ---
+  (global_label "BTN_LEFT"  (shape output) (at 80 40 0) (uuid "00000002-0001-0001-0001-000000000010") (effects (font (size 1.27 1.27))))
+  (global_label "BTN_RIGHT" (shape output) (at 80 50 0) (uuid "00000002-0001-0001-0001-000000000011") (effects (font (size 1.27 1.27))))
+  (global_label "BTN_BACK"  (shape output) (at 80 60 0) (uuid "00000002-0001-0001-0001-000000000012") (effects (font (size 1.27 1.27))))
+  (global_label "BTN_FWD"   (shape output) (at 80 70 0) (uuid "00000002-0001-0001-0001-000000000013") (effects (font (size 1.27 1.27))))
 
-  ;; --- ANNOTATIONS ---
-  (text "=== UPPER PCB COMPONENT PLACEMENT ===\n\nJ5: FPC 6-pin 0.5mm connector\n     Center-bottom of board\n     Pin1→3V3, Pin2→GND\n     Pin3→BTN_LEFT, Pin4→BTN_RIGHT\n     Pin5→BTN_BACK, Pin6→BTN_FWD\n\nSW4: Kailh micro switch (Left click)\n     Top-left quadrant, plunger faces UP\n     One pin → BTN_LEFT\n     Other pin → GND\n\nSW5: Kailh micro switch (Right click)\n     Top-right quadrant, plunger faces UP\n     One pin → BTN_RIGHT\n     Other pin → GND\n\nSW6: Side-mount tactile switch (Back)\n     Left edge of board, plunger faces LEFT (outward)\n     One pin → BTN_BACK\n     Other pin → GND\n\nSW7: Side-mount tactile switch (Forward)\n     Right edge of board, plunger faces RIGHT (outward)\n     One pin → BTN_FWD\n     Other pin → GND\n\nC1: 100nF decoupling cap (0402)\n     Near J5, between 3V3 and GND\n\nMounting: 2× M2 holes\n     Aligned with top frame screw posts"
+  ;; --- PLACEMENT & WIRING NOTES ---
+  (text "=== UPPER PCB  rev 1.3  ===\n\n--- SW4: Kailh GM 8.0 (Left click) ---\n     Package: 3-pin THT, Cherry-style, 12.8x5.8x6.5mm\n     Pin pitch: 2.54mm\n     Position: X=-10mm, Y=-12mm from board center\n     Orientation: upright, plunger faces UP (+Z)\n     Wiring:\n       COM  -> GND (shared GND pour)\n       NO   -> R1 (10k) -> 3V3  AND  -> BTN_LEFT -> FPC Pin 3\n       NC   -> not connected (leave floating)\n\n--- SW5: Kailh GM 8.0 (Right click) ---\n     Package: 3-pin THT, Cherry-style, 12.8x5.8x6.5mm\n     Pin pitch: 2.54mm\n     Position: X=+10mm, Y=-12mm from board center\n     Orientation: upright, plunger faces UP (+Z)\n     Wiring:\n       COM  -> GND\n       NO   -> R2 (10k) -> 3V3  AND  -> BTN_RIGHT -> FPC Pin 4\n       NC   -> not connected\n\n--- SW6: Kailh Blue Dot SMT Side Button (Back) ---\n     Package: SMD, ~8.75mm, side-actuated\n     Position: X=-24mm, Y=0 (left board edge)\n     Orientation: plunger faces LEFT (outward through top_frame cutout)\n     Wiring:\n       Pin 1 -> GND\n       Pin 2 -> R3 (10k) -> 3V3  AND  -> BTN_BACK -> FPC Pin 5\n\n--- SW7: Kailh Blue Dot SMT Side Button (Forward) ---\n     Package: SMD, ~8.75mm, side-actuated\n     Position: X=+24mm, Y=0 (right board edge)\n     Orientation: plunger faces RIGHT (outward through top_frame cutout)\n     Wiring:\n       Pin 1 -> GND\n       Pin 2 -> R4 (10k) -> 3V3  AND  -> BTN_FWD -> FPC Pin 6\n\n--- Pull-up resistors ---\n     R1: 10k 0402  3V3 -> BTN_LEFT  (between SW4 NO and 3V3)\n     R2: 10k 0402  3V3 -> BTN_RIGHT (between SW5 NO and 3V3)\n     R3: 10k 0402  3V3 -> BTN_BACK  (between SW6 pin2 and 3V3)\n     R4: 10k 0402  3V3 -> BTN_FWD   (between SW7 pin2 and 3V3)\n\n--- Decoupling ---\n     C1: 100nF 0402  3V3 to GND, placed near J5\n\n--- FPC Connector ---\n     J5: 6-pin 0.5mm top-contact, Y=+15mm from center\n     Pin1->3V3, Pin2->GND\n     Pin3->BTN_LEFT, Pin4->BTN_RIGHT\n     Pin5->BTN_BACK, Pin6->BTN_FWD\n\n--- Mounting ---\n     H1: M2 hole at X=-15mm, Y=0\n     H2: M2 hole at X=+15mm, Y=0\n\nNOTE: NC pins on GM 8.0 left unconnected.\nNOTE: GND is a shared copper pour on both layers.\nNOTE: top_frame wall cutout size (9x5mm) must accommodate\n      the Blue Dot switch body - verify clearance before printing."
     (at 30 90 0)
     (uuid "00000002-0001-0001-0001-000000000099")
     (effects (font (size 1.27 1.27)) (justify left))
